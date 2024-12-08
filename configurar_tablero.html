@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Tablero</title>
+    <style>
+        /* Estilos básicos para el tablero */
+        #tablero {
+            display: grid;
+            margin-top: 20px;
+            border: 2px solid black;
+            grid-gap: 1px;
+        }
+        .casillero {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="configurar-tablero" style="text-align: center; margin-top: 5%;">
+        <h1>Configurar Tablero</h1>
+        <div>
+            <label for="filas">Cantidad de filas:</label>
+            <input type="number" id="filas" value="3" min="1" onchange="actualizarTablero()">
+        </div>
+        <div>
+            <label for="columnas">Cantidad de columnas:</label>
+            <input type="number" id="columnas" value="3" min="1" onchange="actualizarTablero()">
+        </div>
+        <div id="tablero"></div>
+        <p>Total de casilleros disponibles: <span id="total-casilleros">9</span></p>
+        <button onclick="location.href='inicio.html'">Volver al Inicio</button>
+    </div>
+
+    <script>
+        // Función para actualizar el tablero basado en filas y columnas
+        function actualizarTablero() {
+            const filas = document.getElementById('filas').value;
+            const columnas = document.getElementById('columnas').value;
+            const totalCasilleros = filas * columnas;
+            const tablero = document.getElementById('tablero');
+            const totalCasillerosSpan = document.getElementById('total-casilleros');
+            
+            // Actualizar el número total de casilleros
+            totalCasillerosSpan.textContent = totalCasilleros;
+
+            // Configurar el estilo del tablero
+            tablero.style.gridTemplateRows = `repeat(${filas}, 1fr)`;
+            tablero.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
+
+            // Limpiar el tablero y agregar los nuevos casilleros
+            tablero.innerHTML = '';
+            for (let i = 0; i < totalCasilleros; i++) {
+                const casillero = document.createElement('div');
+                casillero.classList.add('casillero');
+                tablero.appendChild(casillero);
+            }
+        }
+
+        // Llamar a la función de actualización al cargar la página
+        window.onload = actualizarTablero;
+    </script>
+</body>
+</html>
