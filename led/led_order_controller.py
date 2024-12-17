@@ -158,7 +158,7 @@ def process_item_removal(sorted_order, position, item):
     button = button_pos[position]
 
     print(
-        f"Item '{item['item_name']}' found in position {position}. Waiting for button press...")
+        f"Item '{item[0]['item_name']}' found in position {position}. Waiting for button press...")
 
     search_led.on()
 
@@ -321,6 +321,8 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-# el boton se apreta solo buscando las pos 2
-# no se prende la led 3 verde
+"""
+    NO HAY LUCES (CONECTADAS AL GPIO/PINES RASPI. NO SE PUEDE USAR EL MISMO EN OTRA POSITION) SUFICIENTES PARA CORRER CON ESTA WAVE, ACOMODAR ORDENES PARA QUE SEAN LAS RIMERAS 3
+    SALE UN ERROR AL NO PONER NADA, MUETRA LISTA DE OTODS LOS ITEMS, NO DEBERIA. O SI NOC.
+    VALUE ERROR : LIST.REMOVE(X) : X NOT IN LIST LINE 172. SORTED ORDER [POSITION].REMOVE(ITEM)
+"""
