@@ -1,15 +1,13 @@
-from gpiozero import LED, Button
 from time import sleep
 import json
 from button_led_position import led_pos, button_pos  #
 
 
 
-pos_config = {"rows": 3, "columns": 3}
+grid_config = {"rows": 3, "columns": 3} #Recieved from sql query
 
-pos_removed : int
-
-order_list = {
+#Recieved from sql query
+order_wave = {
     1: [
         {"farma_id": 22960, "item_name": "RENNIE X 36 COMPRIMIDOS", "bar_code": 7793640117230},
         {"farma_id": 23207, "item_name": "ORALSONE TOPICO SOLUCION X 20 ML", "bar_code": 7791984000072},
@@ -29,7 +27,7 @@ order_list = {
     ],
     5: [
         {"farma_id": 55234, "item_name": "DICLOFENAC 50MG X 20", "bar_code": 7796321166677},
-        {"farma_id": 48104, "item_name": "BAYASPIRINA X 10 BLISTER", "bar_code": 8881110010221},
+        {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10", "bar_code": 7798321122001},
     ],
     6: [
         {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10", "bar_code": 7798321122001},
@@ -51,83 +49,99 @@ order_list = {
 
 
 
-
-def recive_and_allying_order(order_list, pos_config, pos_removed=None):
+def receive_and_sort_order_wave(order_wave, grid_config, pos_removed=None):
     """
-    Distributes orders into a grid-like structure based on the specified rows and columns.
+    Distribute orders into a grid based on rows, columns, and optionally remove a position.
+
+    Args:
+        order_wave (dict): Dictionary with multiple orders.
+        grid_config (dict): Dictionary with "rows" and "columns" to define the grid layout.
+        pos_removed (int): Position to be removed from the grid (optional).
+
+    Returns:
+        dict: Dictionary with grid positions as keys and orders (dict) as values.
     """
-    grid = {}
-    position = 1
-    orders = list(order_list.values())  # Convert order dictionary to a list of values
-    rows, columns = pos_config["rows"], pos_config["columns"]
-    for r in range(1, rows + 1):
-        for c in range(1, columns + 1):
-            if position <= len(orders) and (not pos_removed or position not in pos_removed):
-                grid[(r, c)] = orders[position - 1]
-            position += 1
-    print(grid)
-    return grid
+    # Grid dimensions
+    rows = grid_config["rows"]
+    columns = grid_config["columns"]
+
+    # Generate the grid positions, excluding the removed position if given
+    total_positions = rows * columns
+    grid_positions = [i for i in range(1, total_positions + 1) if i != pos_removed]
+
+    # Prepare the result dictionary
+    sorted_order = {}
+    order_keys = list(order_wave.keys())  # Order keys to iterate
+
+    # Map each order to the available grid positions
+    for idx, position in enumerate(grid_positions):
+        if idx < len(order_keys):
+            sorted_order[position] = order_wave[order_keys[idx]]  # Place the order dict
+        else:
+            break  # Stop when there are no more orders
+
+    return sorted_order
 
 
-def search_item_by_partial_name(order_position, partial_name):
+def search_item_by_partial_name(sorted_order, partial_name):
     """
     Search for items in orders that start with the provided partial name.
     """
     matches = []
-    for position, items in order_position.items():
+    for position, items in sorted_order.items():
         for item in items:
             if item["item_name"].lower().startswith(partial_name.lower()):
                 matches.append({"position": position, "item": item})
     return matches
 
 
-def search_item_by_data(order_position, search_item_data):
+def search_item_by_data(sorted_order, search_item_data):
     """
     Search for an item by its full data (dictionary) in the orders.
     """
-    for position, items in order_position.items():
+    for position, items in sorted_order.items():
         for item in items:
             if item == search_item_data:
                 return {"position": position, "item": item}
     return None
 
 
-def process_item_removal(position, item):
+def process_item_removal(sorted_order, position, item):
     """
     Handles LED and button interaction for the removal of an item at a specific position.
     """
-    red_led = led_pos[position]["red"]
-    green_led = led_pos[position]["green"]
+    search_led = led_pos[position]["red"]
+    completion_led = led_pos[position]["green"]
     button = button_pos[position]
 
     print(f"Item '{item['item_name']}' found in position {position}. Waiting for button press...")
 
     
-    red_led.on()
+    search_led.on()
 
     
     button.wait_for_press()
     print(f"Button pressed! Removing '{item['item_name']}' from position {position}.")
 
     # 
-    red_led.off()
+    search_led.off()
 
     
-    order_position[position].remove(item)
+    sorted_order[position].remove(item)
 
     
-    if not order_position[position]:
+    if not sorted_order[position]:
         print(f"Order at position {position} is now complete!")
-        green_led.on() 
+        completion_led.on() 
         sleep(2)
-        green_led.off()
+        completion_led.off()
 
 
-def search_and_remove_item_by_name(order_position, partial_name):
+def search_and_remove_item_by_name(sorted_order, partial_name):
     """
     Search for an item by partial name, confirm it, and remove it.
     """
-    matches = search_item_by_partial_name(order_position, partial_name)
+    matches = search_item_by_partial_name(sorted_order, partial_name)
     if not matches:
         print(f"No items found starting with '{partial_name}'.")
         return 
@@ -137,24 +151,24 @@ def search_and_remove_item_by_name(order_position, partial_name):
 
         confirmation = input(f"Is this the item you were looking for? '{item['item_name']}' (yes/no): ").strip().lower()
         if confirmation == "yes":
-            process_item_removal(position, item)
+            process_item_removal(sorted_order, position, item)
             return  
 
     print("No items were confirmed for removal.")
 
 
-def search_and_remove_item_by_data(order_position, search_item_data):
+def search_and_remove_item_by_data(sorted_order, search_item_data):
     """
     Search for an item by its full data, confirm it, and remove it.
     """
-    match = search_item_by_data(order_position, search_item_data)
+    match = search_item_by_data(sorted_order, search_item_data)
     if not match:
         print(f"Item with data {search_item_data} not found in any order.")
         return
 
     position = match["position"]
     item = match["item"]
-    process_item_removal(position, item)
+    process_item_removal(sorted_order, position, item)
 
 
 def main():
@@ -162,8 +176,8 @@ def main():
     Main program loop to simulate item search and button interaction.
     """
     try:
-        recive_and_allying_order(order_list, pos_config)
-        #while True:
+        sorted_order = receive_and_sort_order_wave(order_wave, grid_config)  #get_order_wave(),get_grid_config(), get_postion_removed() as sql queries
+        while True:
             print("\nChoose search method:")
             print("1. Search by item name")
             print("2. Search by item data (JSON)")
@@ -176,14 +190,14 @@ def main():
 
             if choice == "1":
                 partial_name = input("Enter the partial item name to search: ")
-                search_and_remove_item_by_name(order_position, partial_name)
+                search_and_remove_item_by_name(sorted_order, partial_name)
             elif choice == "2":
                 try:
                     search_item_data = input(
                         "Enter the full item data as JSON (e.g., {'farma_id': 22960, 'item_name': '...', 'bar_code': ...}): "
                     )
                     search_item_data = json.loads(search_item_data.replace("'", '"'))  
-                    search_and_remove_item_by_data(order_position, search_item_data)
+                    search_and_remove_item_by_data(sorted_order, search_item_data)
                 except json.JSONDecodeError:
                     print("Invalid JSON format. Please try again.")
             else:
