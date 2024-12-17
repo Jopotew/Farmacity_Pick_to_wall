@@ -3,50 +3,67 @@ import json
 from button_led_position import led_pos, button_pos  #
 
 
+grid_config = {"rows": 3, "columns": 3}  # Recieved from sql query
 
-grid_config = {"rows": 3, "columns": 3} #Recieved from sql query
-
-#Recieved from sql query
+# Recieved from sql query
 order_wave = {
     1: [
-        {"farma_id": 22960, "item_name": "RENNIE X 36 COMPRIMIDOS", "bar_code": 7793640117230},
-        {"farma_id": 23207, "item_name": "ORALSONE TOPICO SOLUCION X 20 ML", "bar_code": 7791984000072},
-        {"farma_id": 25939, "item_name": "ACTRON X 10 CAPSULAS BLANDAS", "bar_code": 7793640215479},
+        {"farma_id": 22960, "item_name": "RENNIE X 36 COMPRIMIDOS",
+            "bar_code": 7793640117230},
+        {"farma_id": 23207, "item_name": "ORALSONE TOPICO SOLUCION X 20 ML",
+            "bar_code": 7791984000072},
+        {"farma_id": 25939, "item_name": "ACTRON X 10 CAPSULAS BLANDAS",
+            "bar_code": 7793640215479},
     ],
     2: [
-        {"farma_id": 29273, "item_name": "BUSCAPINA GRAGEAS X 20", "bar_code": 7795312108393},
-        {"farma_id": 48104, "item_name": "BAYASPIRINA X 10 BLISTER", "bar_code": 8881110010221},
+        {"farma_id": 29273, "item_name": "BUSCAPINA GRAGEAS X 20",
+            "bar_code": 7795312108393},
+        {"farma_id": 48104, "item_name": "BAYASPIRINA X 10 BLISTER",
+            "bar_code": 8881110010221},
     ],
     3: [
-        {"farma_id": 145303, "item_name": "MYLANTA LIMON TABLETAS X 24", "bar_code": 7796285275440},
-        {"farma_id": 152643, "item_name": "FLORATIL VL X 10 CAPSULAS", "bar_code": 7795337990997},
+        {"farma_id": 145303, "item_name": "MYLANTA LIMON TABLETAS X 24",
+            "bar_code": 7796285275440},
+        {"farma_id": 152643, "item_name": "FLORATIL VL X 10 CAPSULAS",
+            "bar_code": 7795337990997},
     ],
     4: [
-        {"farma_id": 33212, "item_name": "PARACETAMOL 500MG X 20", "bar_code": 7794321122334},
-        {"farma_id": 44223, "item_name": "IBUPROFENO 400MG X 10", "bar_code": 7795321144455},
+        {"farma_id": 33212, "item_name": "PARACETAMOL 500MG X 20",
+            "bar_code": 7794321122334},
+        {"farma_id": 44223, "item_name": "IBUPROFENO 400MG X 10",
+            "bar_code": 7795321144455},
     ],
     5: [
-        {"farma_id": 55234, "item_name": "DICLOFENAC 50MG X 20", "bar_code": 7796321166677},
-        {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10", "bar_code": 7798321122001},
+        {"farma_id": 55234, "item_name": "DICLOFENAC 50MG X 20",
+            "bar_code": 7796321166677},
+        {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10",
+            "bar_code": 7798321122001},
     ],
     6: [
-        {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10", "bar_code": 7798321122001},
-        {"farma_id": 88267, "item_name": "OMEPRAZOL 20MG X 14", "bar_code": 7799321133112},
+        {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10",
+            "bar_code": 7798321122001},
+        {"farma_id": 88267, "item_name": "OMEPRAZOL 20MG X 14",
+            "bar_code": 7799321133112},
     ],
     7: [
-        {"farma_id": 99278, "item_name": "AMOXICILINA 500MG X 20", "bar_code": 7790321144223},
-        {"farma_id": 102389, "item_name": "CIPROFLOXACINA 500MG X 10", "bar_code": 7791321155334},
+        {"farma_id": 99278, "item_name": "AMOXICILINA 500MG X 20",
+            "bar_code": 7790321144223},
+        {"farma_id": 102389, "item_name": "CIPROFLOXACINA 500MG X 10",
+            "bar_code": 7791321155334},
     ],
     8: [
-        {"farma_id": 112490, "item_name": "METFORMINA 850MG X 30", "bar_code": 7792321166445},
-        {"farma_id": 122591, "item_name": "GLIBENCLAMIDA 5MG X 30", "bar_code": 7793321177556},
+        {"farma_id": 112490, "item_name": "METFORMINA 850MG X 30",
+            "bar_code": 7792321166445},
+        {"farma_id": 122591, "item_name": "GLIBENCLAMIDA 5MG X 30",
+            "bar_code": 7793321177556},
     ],
     9: [
-        {"farma_id": 132692, "item_name": "ATENOLOL 50MG X 30", "bar_code": 7794321188667},
-        {"farma_id": 142793, "item_name": "ENALAPRIL 10MG X 30", "bar_code": 7795321199778},
+        {"farma_id": 132692, "item_name": "ATENOLOL 50MG X 30",
+            "bar_code": 7794321188667},
+        {"farma_id": 142793, "item_name": "ENALAPRIL 10MG X 30",
+            "bar_code": 7795321199778},
     ]
 }
-
 
 
 def receive_and_sort_order_wave(order_wave, grid_config, pos_removed=None):
@@ -67,7 +84,8 @@ def receive_and_sort_order_wave(order_wave, grid_config, pos_removed=None):
 
     # Generate the grid positions, excluding the removed position if given
     total_positions = rows * columns
-    grid_positions = [i for i in range(1, total_positions + 1) if i != pos_removed]
+    grid_positions = [i for i in range(
+        1, total_positions + 1) if i != pos_removed]
 
     # Prepare the result dictionary
     sorted_order = {}
@@ -76,7 +94,8 @@ def receive_and_sort_order_wave(order_wave, grid_config, pos_removed=None):
     # Map each order to the available grid positions
     for idx, position in enumerate(grid_positions):
         if idx < len(order_keys):
-            sorted_order[position] = order_wave[order_keys[idx]]  # Place the order dict
+            # Place the order dict
+            sorted_order[position] = order_wave[order_keys[idx]]
         else:
             break  # Stop when there are no more orders
 
@@ -90,15 +109,18 @@ def search_item_by_partial_name(sorted_order, partial_name):
     """
     matches = []
     for position, items in sorted_order.items():
-        for index, item in enumerate(items):  # Use index to differentiate items in the same position
+        # Use index to differentiate items in the same position
+        for index, item in enumerate(items):
             if item["item_name"].lower().startswith(partial_name.lower()):
-                matches.append({"position": position, "index": index, "item": item})
+                matches.append(
+                    {"position": position, "index": index, "item": item})
     return matches
+
 
 def search_item_by_farma_id_and_bar_code(sorted_order, search_key, search_value):
     """
     Search for an item by its farma_id or bar_code and return all matches.
-    
+
     Args:
         sorted_order (dict): The orders sorted in grid positions.
         search_key (str): The key to search for ('farma_id' or 'bar_code').
@@ -111,7 +133,8 @@ def search_item_by_farma_id_and_bar_code(sorted_order, search_key, search_value)
     for position, items in sorted_order.items():
         for index, item in enumerate(items):
             if item.get(search_key) == search_value:
-                matches.append({"position": position, "index": index, "item": item})
+                matches.append(
+                    {"position": position, "index": index, "item": item})
     return matches
 
 
@@ -134,25 +157,23 @@ def process_item_removal(sorted_order, position, item):
     completion_led = led_pos[position]["green"]
     button = button_pos[position]
 
-    print(f"Item '{item['item_name']}' found in position {position}. Waiting for button press...")
+    print(
+        f"Item '{item['item_name']}' found in position {position}. Waiting for button press...")
 
-    
     search_led.on()
 
-    
     button.wait_for_press()
-    print(f"Button pressed! Removing '{item['item_name']}' from position {position}.")
+    print(
+        f"Button pressed! Removing '{item['item_name']}' from position {position}.")
 
-    # 
+    #
     search_led.off()
 
-    
     sorted_order[position].remove(item)
 
-    
     if not sorted_order[position]:
         print(f"Order at position {position} is now complete!")
-        completion_led.on() 
+        completion_led.on()
         sleep(2)
         completion_led.off()
 
@@ -168,13 +189,13 @@ def search_and_remove_item_by_name(sorted_order, partial_name):
             if item["item_name"].lower().startswith(partial_name.lower()):
                 # Process and remove the first matched item
                 print(f"Found '{item['item_name']}' in position {position}.")
-                confirmation = input(f"Is this the item you were looking for? '{item['item_name']}' (yes/no): ").strip().lower()
+                confirmation = input(
+                    f"Is this the item you were looking for? '{item['item_name']}' (yes/no): ").strip().lower()
                 if confirmation == "yes":
                     process_item_removal(position, item)
                     return  # Stop after removing the first match
 
     print(f"No confirmed items found starting with '{partial_name}'.")
-
 
 
 def search_and_remove_item_by_data(sorted_order, search_item_data):
@@ -187,8 +208,10 @@ def search_and_remove_item_by_data(sorted_order, search_item_data):
         for item in sorted_order[position]:
             if item == search_item_data:
                 # Found the first match, confirm with the user
-                print(f"Found item '{item['item_name']}' at position {position}.")
-                confirmation = input(f"Is this the item you were looking for? '{item}' (yes/no): ").strip().lower()
+                print(
+                    f"Found item '{item['item_name']}' at position {position}.")
+                confirmation = input(
+                    f"Is this the item you were looking for? '{item}' (yes/no): ").strip().lower()
                 if confirmation == "yes":
                     process_item_removal(sorted_order, position, item)
                     return  # Stop after removing the first match
@@ -196,13 +219,13 @@ def search_and_remove_item_by_data(sorted_order, search_item_data):
     print(f"Item with data {search_item_data} not found in any order.")
 
 
-
 def main():
     """
     Main program loop to simulate item search and button interaction.
     """
     try:
-        sorted_order = receive_and_sort_order_wave(order_wave, grid_config)  # Simulated SQL queries
+        sorted_order = receive_and_sort_order_wave(
+            order_wave, grid_config)  # Simulated SQL queries
         while True:
             print("\nChoose search method:")
             print("1. Search by item name")
@@ -218,7 +241,8 @@ def main():
 
             if choice == "1":
                 partial_name = input("Enter the partial item name to search: ")
-                matches = search_item_by_partial_name(sorted_order, partial_name)
+                matches = search_item_by_partial_name(
+                    sorted_order, partial_name)
                 if matches:
                     print("Matches found:")
                     for match in matches:
@@ -226,16 +250,20 @@ def main():
                         idx = match["index"]
                         item = match["item"]
                         print(f"Position {pos}, Index {idx}: {item}")
-                    position = int(input("Enter the position of the item to remove: "))
-                    index = int(input("Enter the index of the item to remove: "))
+                    position = int(
+                        input("Enter the position of the item to remove: "))
+                    index = int(
+                        input("Enter the index of the item to remove: "))
                     item_to_remove = sorted_order[position][index]
-                    process_item_removal(sorted_order, position, item_to_remove)
+                    process_item_removal(
+                        sorted_order, position, item_to_remove)
                 else:
                     print(f"No items found starting with '{partial_name}'.")
 
             elif choice == "2":
                 farma_id = int(input("Enter the farma_id to search: "))
-                matches = search_item_by_farma_id_and_bar_code(sorted_order, "farma_id", farma_id)
+                matches = search_item_by_farma_id_and_bar_code(
+                    sorted_order, "farma_id", farma_id)
                 if matches:
                     print("Matches found:")
                     for match in matches:
@@ -243,16 +271,20 @@ def main():
                         idx = match["index"]
                         item = match["item"]
                         print(f"Position {pos}, Index {idx}: {item}")
-                    position = int(input("Enter the position of the item to remove: "))
-                    index = int(input("Enter the index of the item to remove: "))
+                    position = int(
+                        input("Enter the position of the item to remove: "))
+                    index = int(
+                        input("Enter the index of the item to remove: "))
                     item_to_remove = sorted_order[position][index]
-                    process_item_removal(sorted_order, position, item_to_remove)
+                    process_item_removal(
+                        sorted_order, position, item_to_remove)
                 else:
                     print(f"No items found with farma_id '{farma_id}'.")
 
             elif choice == "3":
                 bar_code = input("Enter the bar_code to search: ").strip()
-                matches = search_item_by_farma_id_and_bar_code(sorted_order, "bar_code", bar_code)
+                matches = search_item_by_farma_id_and_bar_code(
+                    sorted_order, "bar_code", bar_code)
                 if matches:
                     print("Matches found:")
                     for match in matches:
@@ -260,10 +292,13 @@ def main():
                         idx = match["index"]
                         item = match["item"]
                         print(f"Position {pos}, Index {idx}: {item}")
-                    position = int(input("Enter the position of the item to remove: "))
-                    index = int(input("Enter the index of the item to remove: "))
+                    position = int(
+                        input("Enter the position of the item to remove: "))
+                    index = int(
+                        input("Enter the index of the item to remove: "))
                     item_to_remove = sorted_order[position][index]
-                    process_item_removal(sorted_order, position, item_to_remove)
+                    process_item_removal(
+                        sorted_order, position, item_to_remove)
                 else:
                     print(f"No items found with bar_code '{bar_code}'.")
 
@@ -283,13 +318,9 @@ def main():
             led_pos[position]["green"].off()
 
 
-
 if __name__ == "__main__":
     main()
 
 
-
-#el boton se apreta solo buscando las pos 2
-#no se prende la led 3 verde
-
-
+# el boton se apreta solo buscando las pos 2
+# no se prende la led 3 verde
