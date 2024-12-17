@@ -86,12 +86,32 @@ def receive_and_sort_order_wave(order_wave, grid_config, pos_removed=None):
 def search_item_by_partial_name(sorted_order, partial_name):
     """
     Search for items in orders that start with the provided partial name.
+    Shows all instances and differentiates between them.
     """
     matches = []
     for position, items in sorted_order.items():
-        for item in items:
+        for index, item in enumerate(items):  # Use index to differentiate items in the same position
             if item["item_name"].lower().startswith(partial_name.lower()):
-                matches.append({"position": position, "item": item})
+                matches.append({"position": position, "index": index, "item": item})
+    return matches
+
+def search_item_by_farma_id_and_bar_code(sorted_order, search_key, search_value):
+    """
+    Search for an item by its farma_id or bar_code and return all matches.
+    
+    Args:
+        sorted_order (dict): The orders sorted in grid positions.
+        search_key (str): The key to search for ('farma_id' or 'bar_code').
+        search_value (int/str): The value to search for.
+
+    Returns:
+        list: A list of matches with their position and index.
+    """
+    matches = []
+    for position, items in sorted_order.items():
+        for index, item in enumerate(items):
+            if item.get(search_key) == search_value:
+                matches.append({"position": position, "index": index, "item": item})
     return matches
 
 
@@ -140,35 +160,41 @@ def process_item_removal(sorted_order, position, item):
 def search_and_remove_item_by_name(sorted_order, partial_name):
     """
     Search for an item by partial name, confirm it, and remove it.
+    This function removes only the first matched item from the orders.
     """
-    matches = search_item_by_partial_name(sorted_order, partial_name)
-    if not matches:
-        print(f"No items found starting with '{partial_name}'.")
-        return 
-    for match in matches:
-        position = match["position"]
-        item = match["item"]
+    # Search for the first match in positional order
+    for position in sorted(sorted_order.keys()):  # Sort positions to ensure order
+        for item in sorted_order[position]:
+            if item["item_name"].lower().startswith(partial_name.lower()):
+                # Process and remove the first matched item
+                print(f"Found '{item['item_name']}' in position {position}.")
+                confirmation = input(f"Is this the item you were looking for? '{item['item_name']}' (yes/no): ").strip().lower()
+                if confirmation == "yes":
+                    process_item_removal(position, item)
+                    return  # Stop after removing the first match
 
-        confirmation = input(f"Is this the item you were looking for? '{item['item_name']}' (yes/no): ").strip().lower()
-        if confirmation == "yes":
-            process_item_removal(sorted_order, position, item)
-            return  
+    print(f"No confirmed items found starting with '{partial_name}'.")
 
-    print("No items were confirmed for removal.")
 
 
 def search_and_remove_item_by_data(sorted_order, search_item_data):
     """
     Search for an item by its full data, confirm it, and remove it.
+    This function removes only the first matched item from the orders.
     """
-    match = search_item_by_data(sorted_order, search_item_data)
-    if not match:
-        print(f"Item with data {search_item_data} not found in any order.")
-        return
+    # Iterate through positions in sorted order
+    for position in sorted(sorted_order.keys()):  # Sort positions to ensure order
+        for item in sorted_order[position]:
+            if item == search_item_data:
+                # Found the first match, confirm with the user
+                print(f"Found item '{item['item_name']}' at position {position}.")
+                confirmation = input(f"Is this the item you were looking for? '{item}' (yes/no): ").strip().lower()
+                if confirmation == "yes":
+                    process_item_removal(sorted_order, position, item)
+                    return  # Stop after removing the first match
 
-    position = match["position"]
-    item = match["item"]
-    process_item_removal(sorted_order, position, item)
+    print(f"Item with data {search_item_data} not found in any order.")
+
 
 
 def main():
@@ -176,11 +202,13 @@ def main():
     Main program loop to simulate item search and button interaction.
     """
     try:
-        sorted_order = receive_and_sort_order_wave(order_wave, grid_config)  #get_order_wave(),get_grid_config(), get_postion_removed() as sql queries
+        sorted_order = receive_and_sort_order_wave(order_wave, grid_config)  # Simulated SQL queries
         while True:
             print("\nChoose search method:")
             print("1. Search by item name")
-            print("2. Search by item data (JSON)")
+            print("2. Search by farma_id")
+            print("3. Search by bar_code")
+            print("4. Show all orders")
             print("Type 'exit' to quit.")
             choice = input("Enter choice: ")
 
@@ -190,18 +218,62 @@ def main():
 
             if choice == "1":
                 partial_name = input("Enter the partial item name to search: ")
-                search_and_remove_item_by_name(sorted_order, partial_name)
+                matches = search_item_by_partial_name(sorted_order, partial_name)
+                if matches:
+                    print("Matches found:")
+                    for match in matches:
+                        pos = match["position"]
+                        idx = match["index"]
+                        item = match["item"]
+                        print(f"Position {pos}, Index {idx}: {item}")
+                    position = int(input("Enter the position of the item to remove: "))
+                    index = int(input("Enter the index of the item to remove: "))
+                    item_to_remove = sorted_order[position][index]
+                    process_item_removal(sorted_order, position, item_to_remove)
+                else:
+                    print(f"No items found starting with '{partial_name}'.")
+
             elif choice == "2":
-                try:
-                    search_item_data = input(
-                        "Enter the full item data as JSON (e.g., {'farma_id': 22960, 'item_name': '...', 'bar_code': ...}): "
-                    )
-                    search_item_data = json.loads(search_item_data.replace("'", '"'))  
-                    search_and_remove_item_by_data(sorted_order, search_item_data)
-                except json.JSONDecodeError:
-                    print("Invalid JSON format. Please try again.")
+                farma_id = int(input("Enter the farma_id to search: "))
+                matches = search_item_by_farma_id_and_bar_code(sorted_order, "farma_id", farma_id)
+                if matches:
+                    print("Matches found:")
+                    for match in matches:
+                        pos = match["position"]
+                        idx = match["index"]
+                        item = match["item"]
+                        print(f"Position {pos}, Index {idx}: {item}")
+                    position = int(input("Enter the position of the item to remove: "))
+                    index = int(input("Enter the index of the item to remove: "))
+                    item_to_remove = sorted_order[position][index]
+                    process_item_removal(sorted_order, position, item_to_remove)
+                else:
+                    print(f"No items found with farma_id '{farma_id}'.")
+
+            elif choice == "3":
+                bar_code = input("Enter the bar_code to search: ").strip()
+                matches = search_item_by_farma_id_and_bar_code(sorted_order, "bar_code", bar_code)
+                if matches:
+                    print("Matches found:")
+                    for match in matches:
+                        pos = match["position"]
+                        idx = match["index"]
+                        item = match["item"]
+                        print(f"Position {pos}, Index {idx}: {item}")
+                    position = int(input("Enter the position of the item to remove: "))
+                    index = int(input("Enter the index of the item to remove: "))
+                    item_to_remove = sorted_order[position][index]
+                    process_item_removal(sorted_order, position, item_to_remove)
+                else:
+                    print(f"No items found with bar_code '{bar_code}'.")
+
+            elif choice == "4":
+                print("Current Orders:")
+                for position, items in sorted_order.items():
+                    print(f"Position {position}: {items}")
+
             else:
-                print("Invalid choice. Please select 1, 2, or 'exit'.")
+                print("Invalid choice. Please select a valid option or 'exit'.")
     except KeyboardInterrupt:
         print("\nProgram interrupted by user.")
     finally:
@@ -211,8 +283,10 @@ def main():
             led_pos[position]["green"].off()
 
 
+
 if __name__ == "__main__":
     main()
+
 
 
 #el boton se apreta solo buscando las pos 2
