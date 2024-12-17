@@ -153,29 +153,42 @@ def process_item_removal(sorted_order, position, item):
     """
     Handles LED and button interaction for the removal of an item at a specific position.
     """
+    # Debugging to verify the inputs
+    print("Current position:", position)
+    print("Current items at position:", sorted_order[position])
+    print("Item to remove:", item)
+
+    # Check LED and button configuration
     search_led = led_pos[position]["red"]
     completion_led = led_pos[position]["green"]
     button = button_pos[position]
 
-    print(
-        f"Item '{item[0]['item_name']}' found in position {position}. Waiting for button press...")
+    print(f"Item '{item['item_name']}' found in position {position}. Waiting for button press...")
 
+    # Turn on search LED
     search_led.on()
 
+    # Wait for button press
     button.wait_for_press()
-    print(
-        f"Button pressed! Removing '{item['item_name']}' from position {position}.")
+    print(f"Button pressed! Removing '{item['item_name']}' from position {position}.")
 
-    #
+    # Turn off search LED
     search_led.off()
 
-    sorted_order[position].remove(item)
+    # Remove the item
+    try:
+        sorted_order[position].remove(item)  # Ensure the exact item matches
+    except ValueError:
+        print(f"Error: Item {item} not found in position {position}.")
+        return
 
+    # If the position list is empty, mark order complete
     if not sorted_order[position]:
         print(f"Order at position {position} is now complete!")
         completion_led.on()
         sleep(2)
         completion_led.off()
+
 
 
 def search_and_remove_item_by_name(sorted_order, partial_name):
