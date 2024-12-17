@@ -3,11 +3,13 @@ from time import sleep
 import json
 from button_led_position import led_pos, button_pos  #
 
-with open("order.json", "r") as file:
-    order_data = json.load(file)
 
 
-order_position = {
+pos_config = {"rows": 3, "columns": 3}
+
+pos_removed : int
+
+order_list = {
     1: [
         {"farma_id": 22960, "item_name": "RENNIE X 36 COMPRIMIDOS", "bar_code": 7793640117230},
         {"farma_id": 23207, "item_name": "ORALSONE TOPICO SOLUCION X 20 ML", "bar_code": 7791984000072},
@@ -20,8 +22,51 @@ order_position = {
     3: [
         {"farma_id": 145303, "item_name": "MYLANTA LIMON TABLETAS X 24", "bar_code": 7796285275440},
         {"farma_id": 152643, "item_name": "FLORATIL VL X 10 CAPSULAS", "bar_code": 7795337990997},
+    ],
+    4: [
+        {"farma_id": 33212, "item_name": "PARACETAMOL 500MG X 20", "bar_code": 7794321122334},
+        {"farma_id": 44223, "item_name": "IBUPROFENO 400MG X 10", "bar_code": 7795321144455},
+    ],
+    5: [
+        {"farma_id": 55234, "item_name": "DICLOFENAC 50MG X 20", "bar_code": 7796321166677},
+        {"farma_id": 48104, "item_name": "BAYASPIRINA X 10 BLISTER", "bar_code": 8881110010221},
+    ],
+    6: [
+        {"farma_id": 77256, "item_name": "LOPERAMIDA 2MG X 10", "bar_code": 7798321122001},
+        {"farma_id": 88267, "item_name": "OMEPRAZOL 20MG X 14", "bar_code": 7799321133112},
+    ],
+    7: [
+        {"farma_id": 99278, "item_name": "AMOXICILINA 500MG X 20", "bar_code": 7790321144223},
+        {"farma_id": 102389, "item_name": "CIPROFLOXACINA 500MG X 10", "bar_code": 7791321155334},
+    ],
+    8: [
+        {"farma_id": 112490, "item_name": "METFORMINA 850MG X 30", "bar_code": 7792321166445},
+        {"farma_id": 122591, "item_name": "GLIBENCLAMIDA 5MG X 30", "bar_code": 7793321177556},
+    ],
+    9: [
+        {"farma_id": 132692, "item_name": "ATENOLOL 50MG X 30", "bar_code": 7794321188667},
+        {"farma_id": 142793, "item_name": "ENALAPRIL 10MG X 30", "bar_code": 7795321199778},
     ]
 }
+
+
+
+
+def recive_and_allying_order(order_list, pos_config, pos_removed=None):
+    """
+    Distributes orders into a grid-like structure based on the specified rows and columns.
+    """
+    grid = {}
+    position = 1
+    orders = list(order_list.values())  # Convert order dictionary to a list of values
+    rows, columns = pos_config["rows"], pos_config["columns"]
+    for r in range(1, rows + 1):
+        for c in range(1, columns + 1):
+            if position <= len(orders) and (not pos_removed or position not in pos_removed):
+                grid[(r, c)] = orders[position - 1]
+            position += 1
+    print(grid)
+    return grid
 
 
 def search_item_by_partial_name(order_position, partial_name):
@@ -117,7 +162,8 @@ def main():
     Main program loop to simulate item search and button interaction.
     """
     try:
-        while True:
+        recive_and_allying_order(order_list, pos_config)
+        #while True:
             print("\nChoose search method:")
             print("1. Search by item name")
             print("2. Search by item data (JSON)")
