@@ -1,9 +1,17 @@
 from gpiozero import LED, Button
 from models.grid_config_model import GridConfig
 from models.led_position_model import LedPositionModel
+<<<<<<< Updated upstream
 
 class RaspiController:
     conjuntoLEDS : LedPositionModel #roja verde posicion
+=======
+from services.led_data_service import LedDataService
+
+class RaspiController:
+    
+    leds : LedDataService #roja verde posicion
+>>>>>>> Stashed changes
     Button : Button
     
     
