@@ -1,12 +1,11 @@
 from gpiozero import LED, Button
-from models.grid_config_model import GridPosition
-
+from models.grid_config_model import GridConfig
+from models.led_position_model import LedPositionModel
 
 class RaspiController:
-    search_led: LED
-    completion_led : LED
+    conjuntoLEDS : LedPositionModel #roja verde posicion
     Button : Button
-    grid_position : GridPosition
+    
     
     def __init__(self):
         pass
@@ -21,3 +20,4 @@ class RaspiController:
         pass
 
 
+    
