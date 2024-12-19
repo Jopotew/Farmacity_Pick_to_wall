@@ -1,4 +1,4 @@
-import mysql.connector
+#import mysql.connector
 
 from led import data
 

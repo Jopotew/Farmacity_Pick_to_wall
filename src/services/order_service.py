@@ -1,3 +1,12 @@
+import sys
+import os
+
+# Agregar el directorio `src` al path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_path = os.path.join(current_dir, '..')
+sys.path.append(src_path)
+
+
 from models.grid_config_model import GridConfig
 from models.position_model import Position
 from services.database_service import DatabaseService
