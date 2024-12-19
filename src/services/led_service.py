@@ -15,6 +15,6 @@ class LedDataService:
         return leds
 
 
-led = LedDataService()
-leds = led.get_leds()
+# led = LedDataService()
+# leds = led.get_leds()
 # print(leds[Posicion de la grilla].search_led)
