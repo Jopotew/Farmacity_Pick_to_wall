@@ -1,25 +1,16 @@
-from gpiozero import LED, Button
-from models.grid_config_model import GridConfig
-from models.led_position_model import LedPositionModel
-<<<<<<< Updated upstream
-
-class RaspiController:
-    conjuntoLEDS : LedPositionModel #roja verde posicion
-=======
 from services.led_data_service import LedDataService
+from models.led_position_model import LedPositionModel
+from models.button_position_model import ButtonPositionModel
 
 class RaspiController:
+    leds : LedPositionModel #roja verde posicion
+    button : ButtonPositionModel
     
-    leds : LedDataService #roja verde posicion
->>>>>>> Stashed changes
-    Button : Button
-    
-    
-    def __init__(self):
-        pass
-
-    def turn_led_on(self):
-        pass
+    def turn_led_on(self, position):
+        leds = LedDataService
+        led_list: list = leds.get_leds()
+        for led in led_list:
+            pass
 
     def turn_led_off(self):
         pass

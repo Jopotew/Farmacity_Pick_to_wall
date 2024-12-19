@@ -5,8 +5,4 @@ from gpiozero import LED
 @dataclass
 class LedModel:
     led_color: str
-<<<<<<< Updated upstream
-    raspi_pos: int
-=======
-    raspi_pos: int #LED
->>>>>>> Stashed changes
+    raspi_pos: int  # led

@@ -1,10 +1,11 @@
-from NOVA import path
-from providers import led_data_provider
-from models.led_position_model import LedPositionModel
 import sys
 sys.path.append(
-    path.laptop
+    "d:\\Archivos del Programa\\Proyectos\\Farma\\Farmacity_Pick_to_wall\\src"
     )
+from providers import led_data_provider
+from models.led_position_model import LedPositionModel
+
+
 
 
 class LedDataService:
@@ -18,4 +19,5 @@ class LedDataService:
 
 led = LedDataService()
 leds = led.get_leds()
+print(leds[0].search_led.raspi_pos)
 # print(leds[Posicion de la grilla].search_led)
