@@ -1,48 +1,65 @@
+from models.grid_config_model import GridConfig
+from services.button_data_service import ButtonDataService
 from services.order_service import OrderService
-from services import database_service
+from services.database_service import DatabaseService
 from providers import led_data_provider
 from models.led_position_model import LedPositionModel
+from controller.raspi_controller import RaspiController
+from ui.menu_ui import MenuUi
+
+"""
+cambiar leds y buttons en leds y buttons
+
+"""
 
 
 def main():
     """
     Main program loop to interact with the orders.
     """
-    # orderService = OrderService()
-    # sorted_order = orderService.getOrders()
+    order_service = OrderService()
+    rasp_controller = RaspiController()
+    menu_ui = MenuUi()
+    button_service = ButtonDataService()
 
-    # while True:
-    #     item_name = input("Write the item you are looking for (or type 'exit' to quit): ")
-        
-    #     # Handle exit condition
-    #     if item_name.lower() == "exit":
-    #         print("Exiting...")
-    #         break
+    sorted_orders = order_service.get_orders()
 
-    #     # Handle empty input
-    #     if not item_name.strip():
-    #         print("No input given.")
-    #         continue
+    while True:
 
-    #     # Search for the item
-    #     item = orderService.search_by_name(sorted_order, item_name)
-    #     if item is None:
-    #         print("Item not found or invalid input.")
-              
-    #         continue
+        option = menu_ui.menu()
+        if option == 1:  # Name
+            name = input("Enter the item name to search: ")
+            item = order_service.search_by_name(sorted_orders, name)
+            pos_order = order_service.search_position_of_order(sorted_orders, item)
+            rasp_controller.turn_seachled_on(pos_order)
+            button = button_service.define_button(pos_order)
+            button.wait_for_press()
+            sorted_order = rasp_controller.button_pressed(pos_order, item)
 
-    #     # Remove the item if found
-    #     sorted_order = orderService.remove_from_order(sorted_order, item)
-    #     print("Order after removing item:")
-    #     orderService.print_orders(sorted_order)
-    
-    db =  database_service.DatabaseService()
-    leds = []
-    for key, value in led_data_provider.led_pos.items():
-        leds.append(LedPositionModel.fromDict(key, value))
-    
-    print(leds)
+        elif option == 2:  # farma_id
+            id = input("Enter the item's Farmacity Id Code  to search: ")
+            item = order_service.search_by_farma_id(sorted_orders, id)
+            pos_order = order_service.search_position_of_order(sorted_orders, item)
+            rasp_controller.turn_seachled_on(pos_order)
+            button = button_service.define_button(pos_order)
+            button.wait_for_press()
+            sorted_order = rasp_controller.button_pressed(pos_order, item)
+
+        elif option == 3:  # barcode
+            barcode = input("Enter the item's barcode to search: ")
+            item = order_service.search_by_barcode(sorted_orders, barcode)
+            pos_order = order_service.search_position_of_order(sorted_orders, item)
+            rasp_controller.turn_seachled_on(pos_order)
+            button = button_service.define_button(pos_order)
+            button.wait_for_press()
+            sorted_order = rasp_controller.button_pressed(pos_order, item)
+
+        elif option == 4:
+            order_service.print_orders(sorted_order)
+
+        elif option == 5:  # exit
+            break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,9 +1,11 @@
+import sys
+
+sys.path.append(
+    "d:\\Archivos del Programa\\Proyectos\\Farma\\Farmacity_Pick_to_wall\\src"
+)
 
 from providers import led_data_provider
 from models.led_position_model import LedPositionModel
-import sys
-sys.path.append(
-    'd:\\Archivos del Programa\\Proyectos\\Farma\\Farmacity_Pick_to_wall\\src')
 
 
 class LedDataService:

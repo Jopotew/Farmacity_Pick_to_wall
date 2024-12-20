@@ -5,7 +5,7 @@ from gpiozero import Button
 @dataclass
 class ButtonPositionModel:
     grid_pos: int
-    raspi_pos: Button  # Button
+    raspi_pos: int  # Button
 
     @staticmethod
     def fromDict(grid_pos: int, raspi_pos: int):
