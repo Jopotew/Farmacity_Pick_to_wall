@@ -23,43 +23,52 @@ def main():
     button_service = ButtonDataService()
 
     sorted_orders = order_service.get_orders()
+    try:
+        while True:
 
-    while True:
+            option = menu_ui.menu()
+            if option == 1:  # Name
+                name = input("Enter the item name to search: ")
+                item = order_service.search_by_name(sorted_orders, name)
+                pos_order = order_service.search_position_of_order(sorted_orders, item)
+                rasp_controller.turn_seachled_on(pos_order)
+                button = button_service.define_button(pos_order)
+                button.wait_for_press()
+                sorted_order = rasp_controller.button_pressed(pos_order, item)
 
-        option = menu_ui.menu()
-        if option == 1:  # Name
-            name = input("Enter the item name to search: ")
-            item = order_service.search_by_name(sorted_orders, name)
-            pos_order = order_service.search_position_of_order(sorted_orders, item)
-            rasp_controller.turn_seachled_on(pos_order)
-            button = button_service.define_button(pos_order)
-            button.wait_for_press()
-            sorted_order = rasp_controller.button_pressed(pos_order, item)
+            elif option == 2:  # farma_id
+                id = input("Enter the item's Farmacity Id Code  to search: ")
+                item = order_service.search_by_farma_id(sorted_orders, id)
+                pos_order = order_service.search_position_of_order(sorted_orders, item)
+                rasp_controller.turn_seachled_on(pos_order)
+                button = button_service.define_button(pos_order)
+                button.wait_for_press()
+                sorted_order = rasp_controller.button_pressed(pos_order, item)
 
-        elif option == 2:  # farma_id
-            id = input("Enter the item's Farmacity Id Code  to search: ")
-            item = order_service.search_by_farma_id(sorted_orders, id)
-            pos_order = order_service.search_position_of_order(sorted_orders, item)
-            rasp_controller.turn_seachled_on(pos_order)
-            button = button_service.define_button(pos_order)
-            button.wait_for_press()
-            sorted_order = rasp_controller.button_pressed(pos_order, item)
+            elif option == 3:  # barcode
+                barcode = input("Enter the item's barcode to search: ")
+                item = order_service.search_by_barcode(sorted_orders, barcode)
+                pos_order = order_service.search_position_of_order(sorted_orders, item)
+                rasp_controller.turn_seachled_on(pos_order)
+                button = button_service.define_button(pos_order)
+                button.wait_for_press()
+                sorted_order = rasp_controller.button_pressed(pos_order, item)
 
-        elif option == 3:  # barcode
-            barcode = input("Enter the item's barcode to search: ")
-            item = order_service.search_by_barcode(sorted_orders, barcode)
-            pos_order = order_service.search_position_of_order(sorted_orders, item)
-            rasp_controller.turn_seachled_on(pos_order)
-            button = button_service.define_button(pos_order)
-            button.wait_for_press()
-            sorted_order = rasp_controller.button_pressed(pos_order, item)
+            elif option == 4:
+                order_service.print_orders(sorted_order)
 
-        elif option == 4:
-            order_service.print_orders(sorted_order)
+            elif option == 5:  # exit
+                
+                break
+            
 
-        elif option == 5:  # exit
-            break
-
+    #TODO: Agregar que se apaguen los leds de la raspi. 
+    finally:
+        pass
+            # print("Cleaning up GPIO...")
+            # for position in led_pos:
+            #     led_pos[position]["red"].off()
+            #     led_pos[position]["green"].off()
 
 if __name__ == "__main__":
     main()
