@@ -2,7 +2,7 @@ from dataclasses import dataclass
 #from button_led_position import led_pos, button_pos
 from typing import Optional
 #from gpiozero import LED, Button
-import data 
+import providers.orders as orders 
 
 
 
@@ -111,10 +111,10 @@ class SortedOrder:
 
 class DatabaseService:
     def getGrid(self):
-        return data.grid_config
+        return orders.grid_config
 
     def getOrders(self):
-        return data.order_wave
+        return orders.order_wave
 
 
 class OrderService:

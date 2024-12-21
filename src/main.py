@@ -1,4 +1,5 @@
 from models.grid_config_model import GridConfig
+from services.bcode_scanner_service import ScannerService
 from services.button_data_service import ButtonDataService
 from services.order_service import OrderService
 from services.database_service import DatabaseService
@@ -23,6 +24,7 @@ def main():
     button_service = ButtonDataService()
 
     sorted_orders = order_service.get_orders()
+
     try:
         while True:
 
@@ -31,33 +33,44 @@ def main():
                 name = input("Enter the item name to search: ")
                 item = order_service.search_by_name(sorted_orders, name)
                 pos_order = order_service.search_position_of_order(sorted_orders, item)
-                rasp_controller.turn_seachled_on(pos_order)
+                rasp_controller.turn_searchled_on(pos_order)
                 button = button_service.define_button(pos_order)
                 button.wait_for_press()
                 sorted_order = rasp_controller.button_pressed(pos_order, item)
 
             elif option == 2:  # farma_id
-                id = input("Enter the item's Farmacity Id Code  to search: ")
+                id = int(input("Enter the item's Farmacity Id Code  to search: "))
                 item = order_service.search_by_farma_id(sorted_orders, id)
                 pos_order = order_service.search_position_of_order(sorted_orders, item)
-                rasp_controller.turn_seachled_on(pos_order)
+                rasp_controller.turn_searchled_on(pos_order)
                 button = button_service.define_button(pos_order)
                 button.wait_for_press()
                 sorted_order = rasp_controller.button_pressed(pos_order, item)
 
             elif option == 3:  # barcode
-                barcode = input("Enter the item's barcode to search: ")
+                barcode = int(input("Enter the item's barcode to search: "))
                 item = order_service.search_by_barcode(sorted_orders, barcode)
                 pos_order = order_service.search_position_of_order(sorted_orders, item)
-                rasp_controller.turn_seachled_on(pos_order)
+                rasp_controller.turn_searchled_on(pos_order)
                 button = button_service.define_button(pos_order)
                 button.wait_for_press()
                 sorted_order = rasp_controller.button_pressed(pos_order, item)
 
-            elif option == 4:
+            elif option == 4: #camara
+                scanner = ScannerService()
+                barcode = scanner.scan_and_fetch_product()
+                item = order_service.search_by_barcode(sorted_orders, barcode)
+                pos_order = order_service.search_position_of_order(sorted_orders, item)
+                rasp_controller.turn_searchled_on(pos_order)
+                button.wait_for_press()
+                sorted_order = rasp_controller.button_pressed(pos_order, item)
+                
+
+            elif option == 5:  
+                
                 order_service.print_orders(sorted_order)
 
-            elif option == 5:  # exit
+            elif option == 6:  # exit
                 
                 break
             

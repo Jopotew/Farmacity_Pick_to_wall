@@ -1,11 +1,11 @@
 #import mysql.connector
 
-from led import data
+from providers import orders
 
 class DatabaseService:
     def getGrid(self):
-        return data.grid_config
+        return orders.grid_config
 
     def getOrders(self):
-        return data.order_wave
+        return orders.order_wave
 

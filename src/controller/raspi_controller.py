@@ -17,7 +17,7 @@ class RaspiController:
     leds: LedPositionModel  # roja verde posicion
     button: ButtonPositionModel
 
-    def turn_seachled_on(self, position ):
+    def turn_searchled_on(self, position ):
         leds = LedDataService
         led_list = leds.get_leds()
         print("ON")

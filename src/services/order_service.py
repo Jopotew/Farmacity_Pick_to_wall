@@ -102,10 +102,20 @@ class OrderService:
                     return item
         return None
 
-    def search_by_barcode(self, sorted_order: list[Order], barcode_id: int) -> Item:
+    def search_by_barcode(self, sorted_order: list[Order], barcode_id: str) -> Item:
         for order in sorted_order:
+            print(order)
             for item in order.items:
+                print("**********")
+                print("CODIGO DEL ITEM DEL BUCLE : ", item.bar_code)
+                print("CODIGO QUE SE PASA EN FUNC: ", barcode_id)
+                print("-----------------")
+                print(type(item.bar_code))
+                print(type(barcode_id))
+                print(item.bar_code is barcode_id)
+                print("-----------------")
                 if item.bar_code == barcode_id:
+
                     return item
         return None
 
