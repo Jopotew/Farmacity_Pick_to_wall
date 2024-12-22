@@ -1,6 +1,7 @@
 import sys
 import os
 
+
 # Agregar el directorio `src` al path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "..")
@@ -9,10 +10,12 @@ sys.path.append(src_path)
 
 from models.grid_config_model import GridConfig
 from models.position_model import Position
-from services.database_service import DatabaseService
-from services.sorted_orders_service import SortedOrder
 from models.item_model import Item
 from models.order_model import Order
+from services.database_service import DatabaseService
+from services.sorted_orders_service import SortedOrder
+from services.button_data_service import ButtonDataService
+from controller.raspi_controller import RaspiController
 
 
 class OrderService:
@@ -50,10 +53,10 @@ class OrderService:
         for order in sorted_orders:
             for item_B in order.items:
                 if item_B.item_name == item_A.item_name:
-                    print(f"Found item: {item_B.item_name}")
-                    pos_orden = order.position.position
-                    print(pos_orden)
-                    return pos_orden
+                    print(f"IEM FOUND: {item_B.item_name}")
+                    pos_order = order.position.position
+                    print("POSITION OF THE ORDER: ", pos_order)
+                    return pos_order
 
     # TODO:
     """
@@ -110,10 +113,6 @@ class OrderService:
                 print("CODIGO DEL ITEM DEL BUCLE : ", item.bar_code)
                 print("CODIGO QUE SE PASA EN FUNC: ", barcode_id)
                 print("-----------------")
-                print(type(item.bar_code))
-                print(type(barcode_id))
-                print(item.bar_code is barcode_id)
-                print("-----------------")
                 if item.bar_code == barcode_id:
 
                     return item
@@ -159,3 +158,14 @@ class OrderService:
             print(f"Position {order.position}:")
             for item in order.items:
                 print(f"    {item.item_name}")
+
+    def search_item(self, item, sorted_order):
+        rasp_controller = RaspiController()
+        button_service = ButtonDataService()
+        pos_order = self.search_position_of_order(sorted_order, item)
+        rasp_controller.turn_searchled_on(pos_order)
+        button = button_service.define_button(pos_order)
+        button.wait_for_press()
+        rasp_controller.button_pressed()
+        sorted_order = self.remove_from_order(sorted_order, item)
+        return sorted_order
