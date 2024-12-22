@@ -1,5 +1,6 @@
 from services.bcode_scanner_service import ScannerService
 from services.order_service import OrderService
+from controller.raspi_controller import RaspiController
 from ui.menu_ui import MenuUi
 
 """
@@ -9,11 +10,7 @@ cambiar leds y buttons en leds y buttons
 
 
 def main():
-    """
-    Main program loop to interact with the orders.
-    """
     order_service = OrderService()
-
     menu_ui = MenuUi()
 
     sorted_orders = order_service.get_orders()
@@ -47,16 +44,11 @@ def main():
                 order_service.print_orders(sorted_orders)
 
             elif option == 6:  # exit
-
                 break
 
-    # TODO: Agregar que se apaguen los leds de la raspi.
     finally:
-        pass
-        # print("Cleaning up GPIO...")
-        # for position in led_pos:
-        #     led_pos[position]["red"].off()
-        #     led_pos[position]["green"].off()
+        raspi_controller = RaspiController()
+        raspi_controller.clear_gpios()
 
 
 if __name__ == "__main__":

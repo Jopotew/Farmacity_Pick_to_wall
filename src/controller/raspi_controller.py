@@ -56,3 +56,12 @@ class RaspiController:
         self.turn_searchled_off()
 
         return
+    
+
+    def clear_gpios(self):
+        print("Cleaning up GPIO...")
+        leds = LedDataService
+        led_list: list = leds.get_leds()
+        for position in led_list:
+            led_list[position]["red"].off()
+            led_list[position]["green"].off()
