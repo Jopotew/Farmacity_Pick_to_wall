@@ -1,0 +1,1 @@
+SELECT * FROM farmacity_pw.grid;
