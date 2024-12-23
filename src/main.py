@@ -17,7 +17,7 @@ def main():
 
     try:
         while True:
-
+            
             option = menu_ui.menu()
             if option == 1:  # Name
                 name = input("Enter the item name to search: ")

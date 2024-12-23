@@ -129,6 +129,12 @@ class OrderService:
                         f"Removed item '{item.item_name}' from order at position {order.position}."
                     )
                     return sorted_order
+                
+                if order is None:
+                    rasp_controller = RaspiController()
+                    rasp_controller.turn_completionled_on
+                    return sorted_order
+                
             print("Item not found in any order.")
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
