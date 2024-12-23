@@ -1,8 +1,6 @@
 import sys
 import os
 
-
-# Agregar el directorio `src` al path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "..")
 sys.path.append(src_path)
@@ -33,23 +31,23 @@ class OrderService:
 
     def get_orders(self) -> SortedOrder:
         db_service = DatabaseService()
-        grid_config_dict = db_service.getGrid()
-        order_dict = db_service.getOrders()
 
+        grid_config_dict = db_service.getGrid()
         grid_config = GridConfig.fromDict(grid_config_dict)
         positions = self.create_positions(grid_config)
+        order_dict = db_service.getOrders(positions[-1].position)
 
         sorted_order = []
         for order, position in zip(order_dict, positions):
             items = []
             for item in order_dict[order]:
                 items.append(Item.fromDict(item))
-
             sorted_order.append(Order(position, items))
-
+        print(sorted_order)
         return sorted_order
 
     def search_position_of_order(self, sorted_orders, item_A: Item):
+        print(item_A)
         for order in sorted_orders:
             for item_B in order.items:
                 if item_B.item_name == item_A.item_name:
@@ -105,16 +103,10 @@ class OrderService:
                     return item
         return None
 
-    def search_by_barcode(self, sorted_order: list[Order], barcode_id: str) -> Item:
+    def search_by_barcode(self, sorted_order: list[Order], barcode_id: int) -> Item:
         for order in sorted_order:
-            print(order)
             for item in order.items:
-                print("**********")
-                print("CODIGO DEL ITEM DEL BUCLE : ", item.bar_code)
-                print("CODIGO QUE SE PASA EN FUNC: ", barcode_id)
-                print("-----------------")
                 if item.bar_code == barcode_id:
-
                     return item
         return None
 

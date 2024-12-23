@@ -12,8 +12,8 @@ class GridConfig:
     @staticmethod
     def fromDict(diccionario):
         return GridConfig(
-            diccionario["rows"],
-            diccionario["columns"],
+            diccionario["gridrow"],
+            diccionario["gridcol"],
             diccionario.get("unavailable_positions"),
         )
 

@@ -38,6 +38,7 @@ def main():
                 scanner = ScannerService()
                 barcode = scanner.scan_and_fetch_product()
                 item = order_service.search_by_barcode(sorted_orders, barcode)
+
                 sorted_order = order_service.search_item(item, sorted_orders)
 
             elif option == 5:
