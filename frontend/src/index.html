@@ -3,9 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Grid Example</title>
+    <style>
+        #gridContainer {
+            display: grid;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .grid-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        .grid-item.disabled {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #returnButton {
+            background-color: #5bc0de;
+            color: white;
+            border: none;
+        }
+
+        #saveButton {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+        }
+        .large-text {
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            font: Arial, sans-serif;
+        }
+    </style>
 </head>
 <body>
+    <div>
+    <p class="large-text">Ingrese filas y columnas del sistema PW</p>
+    </div>
+    <div>
+        <label for="rowsInput">Filas:</label>
+        <input type="number" id="rowsInput" min="1" value="3">
+        <label for="columnsInput">Columnas:</label>
+        <input type="number" id="columnsInput" min="1" value="3">
+        <button id="generateButton">Generar Grilla</button>
+        <label for="position_unbelievable">Posiciones inhabilitadas:</label>
+        <label id="disabledPositionsDisplay"></label>
+    </div>
+    <div id="gridContainer"></div>
+    <input type="hidden" id="disabledInput" />
+
     
+    <button id="returnButton">Retorno</button>
+    <button id="saveButton">Guardar</button>
+
+    <script>
+        let disabledPositions = [];
+
+        document.getElementById('returnButton').addEventListener('click', () => {
+            // Lógica para el botón de retorno
+            window.history.back();
+        });
+
+        document.getElementById('saveButton').addEventListener('click', () => {
+            // Lógica para el botón de guardado
+            const disabledPositions = document.getElementById('disabledInput').value;
+            console.log('Datos guardados:', disabledPositions);
+            // Aquí puedes añadir la lógica para guardar los datos, por ejemplo, enviarlos a un servidor
+        });
+
+        document.getElementById('generateButton').addEventListener('click', () => {
+            const rows = document.getElementById('rowsInput').value;
+            const columns = document.getElementById('columnsInput').value;
+            generateGrid(rows, columns);
+        });
+
+        function generateGrid(rows, columns) {
+            // Clear previous grid
+            gridContainer.innerHTML = '';
+
+            // Set grid properties
+            gridContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            gridContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+            // Generate cells
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < columns; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('grid-item');
+                    cell.textContent = `${i * columns + j + 1}`;
+
+                    cell.addEventListener('click', () => {
+                        toggleCell(cell, i + 1, j + 1);
+                    });
+
+                    gridContainer.appendChild(cell);
+                }
+            }
+        }
+
+        function toggleCell(cell, row, column) {
+            const position = `${row}, ${column}`;
+
+            if (cell.classList.contains('disabled')) {
+                cell.classList.remove('disabled');
+                // Remove position from the array
+                disabledPositions = disabledPositions.filter(pos => pos !== position);
+            } else {
+                cell.classList.add('disabled');
+                // Add position to the array
+                disabledPositions.push(position);
+            }
+
+            // Update the disabled input field
+            disabledInput.value = disabledPositions.join(', ');
+
+            // Update the display of disabled positions
+            document.getElementById('disabledPositionsDisplay').textContent = disabledPositions.join(', ');
+        }
+
+        // Example usage
+        generateGrid(3, 3);
+    </script>
 </body>
 </html>
