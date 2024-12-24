@@ -41,7 +41,9 @@ Integración de Hardware: Creado utilizando una Raspberry Pi para controlar las 
 
 Tecnologías Utilizadas:
 Python: Utilizado para el backend, manejando la lógica y la comunicación entre los componentes del sistema.
+
 HTML: Utilizado para la interfaz de usuario que gestiona y visualiza los pedidos.
+
 Raspberry Pi: Usada para controlar el sistema de iluminación e interactuar con el escáner de códigos de barras.
 
 Este sistema busca optimizar el proceso de recolección en el almacén, reducir errores y mejorar la eficiencia general de las operaciones logísticas de Farmacity.
