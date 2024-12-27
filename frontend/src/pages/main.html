@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Pick to Wall</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        
+        .header {
+            display: flex; 
+            justify-content: space-between;  
+            align-items: center; 
+            background-color: #333; 
+            color: white; 
+            padding: 10px 20px; 
+        }
+
+        
+        .header h1 {
+            font-size: 24px; 
+        }
+
+        
+        .header .buttons {
+            display: flex; 
+            gap: 10px; 
+        }
+
+        
+        .header button {
+            padding: 10px 15px; 
+            font-size: 14px; 
+            background-color: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+
+        
+        .header button:hover {
+            background-color: #45a049; 
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="header">
+        <h1>Sistema Pick to Wall</h1> 
+        
+        <div class="buttons">
+            <button onclick="logout()">Salir</button> 
+            <button onclick="configure()">Configuración</button> 
+            <button onclick="processOrders()">Procesar Órdenes</button>
+        </div>
+    </div>
+
+    <script>
+        
+        function logout() {
+            window.location.href = "login.html"; 
+        }
+
+        
+        function configure() {
+            window.location.href = "index.html";
+        }
+
+        
+        function processOrders() {
+            alert('Procesando órdenes...');
+        }
+    </script>
+</body>
+</html>
