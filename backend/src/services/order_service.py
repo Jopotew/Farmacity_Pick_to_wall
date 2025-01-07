@@ -161,7 +161,7 @@ class OrderService:
         button_service = ButtonDataService()
         pos_order = self.search_position_of_order(sorted_order, item)
         rasp_controller.turn_searchled_on(pos_order)
-        button = button_service.define_button(pos_order)
+        button : Button = button_service.define_button(pos_order)
         button.wait_for_press()
         rasp_controller.button_pressed()
         sorted_order = self.remove_from_order(sorted_order, item)
