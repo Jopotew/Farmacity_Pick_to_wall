@@ -43,7 +43,6 @@ class OrderService:
             for item in order_dict[order]:
                 items.append(Item.fromDict(item))
             sorted_order.append(Order(position, items))
-        print(sorted_order)
         return sorted_order
 
     def search_position_of_order(self, sorted_orders, item_A: Item):

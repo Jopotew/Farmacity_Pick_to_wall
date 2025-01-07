@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 
 # from providers import orders
 
@@ -9,22 +9,24 @@ class DatabaseService:
         self.cursor = None
         self.connection = None
         try:
-
-            self.connection = mysql.connector.connect(
+            # Conexión a la base de datos usando pymysql
+            self.connection = pymysql.connect(
                 host="localhost",  # Dirección del servidor
                 user="root",  # Usuario
                 password="Jopotew22!!",  # Contraseña
                 database="farmacitypw",  # Nombre de la base de datos
+                cursorclass=pymysql.cursors.DictCursor  # Para obtener los resultados como diccionario
             )
 
-            if self.connection.is_connected():
-                self.cursor = self.connection.cursor(dictionary=True)
+            # Intentamos crear el cursor solo si la conexión es exitosa
+            self.cursor = self.connection.cursor()
 
-        except mysql.connector.Error as e:
+        except pymysql.MySQLError as e:
             print(f"Error al conectar con MySQL: {e}")
 
         finally:
-            if "connection" in locals() and self.connection.is_connected():
+            # Aseguramos el cierre adecuado de la conexión y el cursor
+            if self.connection and not self.connection.open:
                 self.cursor.close()
                 self.connection.close()
 
@@ -71,7 +73,6 @@ class DatabaseService:
                 order_wave[id_order_assign] = items
             return order_wave
 
-        except mysql.connector.Error as e:
+        except pymysql.MySQLError as e:
             print(f"Error al ejecutar la consulta: {e}")
             return {}
-
