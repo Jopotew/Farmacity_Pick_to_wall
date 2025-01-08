@@ -46,7 +46,10 @@ class OrderService:
         return sorted_order
 
     def search_position_of_order(self, sorted_orders, item_A: Item):
-        print(item_A)
+        """
+        Returns the position of the order that contains the specified item.
+
+        """
         for order in sorted_orders:
             for item_B in order.items:
                 if item_B.item_name == item_A.item_name:
@@ -128,12 +131,12 @@ class OrderService:
                         f"Removed item '{item.item_name}' from order at position {order.position}."
                     )
                     return sorted_order
-                
+
                 if order is None:
                     rasp_controller = RaspiController()
                     rasp_controller.turn_completionled_on
                     return sorted_order
-                
+
             print("Item not found in any order.")
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
@@ -161,8 +164,8 @@ class OrderService:
         button_service = ButtonDataService()
         pos_order = self.search_position_of_order(sorted_order, item)
         rasp_controller.turn_searchled_on(pos_order)
-        button : Button = button_service.define_button(pos_order)
+        button = button_service.define_button(pos_order)
         button.wait_for_press()
-        rasp_controller.button_pressed()
+        rasp_controller.button_pressed(pos_order)
         sorted_order = self.remove_from_order(sorted_order, item)
         return sorted_order

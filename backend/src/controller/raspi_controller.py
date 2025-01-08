@@ -23,7 +23,7 @@ class RaspiController:
         print("RED LED ON")
         l = led_list[position].search_led
 
-    # l.on()
+        # l.on()
 
     def turn_searchled_off(self, position):
         leds = LedDataService
@@ -48,12 +48,12 @@ class RaspiController:
 
     # l.off()
 
-    def button_pressed(self):
+    def button_pressed(self, position):
         """
         Called when is_button_pressed() is triggered
         """
 
-        self.turn_searchled_off()
+        self.turn_searchled_off(position)
 
         return
     
