@@ -7,13 +7,16 @@
     <!-- Custom Styles -->
     <style>
         html, body {
-            background-color: rgb(4, 240, 4);
+            background-color: #00a339;
+            color: #ffffff;
             margin: 0;
             padding: 0;
             height: 100%;
+            font-family: 'Roboto', sans-serif; /* Fuente del texto */
+
         }
         #container {
-            background: rgba(0, 163, 57, 0.6);
+            background: #00a339;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -29,13 +32,30 @@
         .btn-lg {
             font-size: 1.2rem;
         }
+
+        .boton {
+            background-color: #eb7100;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            font-family: 'Roboto', sans-serif; /* Fuente del texto */
+
+        }
+
+        .boton:hover {
+            background-color: #f5e0d3;
+        }
     </style>
 </head>
 <body>
     <div id="inicio" style="text-align: center; margin-top: 20%;">
         <h1>Pick To Wall</h1>
-        <button onclick="location.href='configurar_tablero.php.'">Configurar Tablero</button>
-        <button onclick="location.href='Configurar_Ola.html'">Comenzar</button>
+        <button class="boton" onclick="location.href='configurar_tablero.php.'">Configurar Tablero</button>
+        <button class="boton" onclick="location.href='Configurar_Ola.html'">Comenzar</button>
     </div>
 </body>
 </html>
