@@ -21,7 +21,7 @@ class RaspiController:
         leds = LedDataService
         led_list = leds.get_leds()
         print("RED LED ON")
-        l = led_list[position].search_led
+        l = led_list[position -1 ].search_led
 
         # l.on()
 
@@ -29,14 +29,14 @@ class RaspiController:
         leds = LedDataService
         led_list: list = leds.get_leds()
         print("RED LED OFF")
-        l = led_list[position].search_led
+        l = led_list[position -1 ].search_led
         # l.off()
 
     def turn_completionled_on(self, position):
         leds = LedDataService
         led_list = leds.get_leds()
         print("GREEN LED ON")
-        l = led_list[position].completion_led
+        l = led_list[position -1 ].completion_led
 
     # l.on()
 
@@ -44,7 +44,7 @@ class RaspiController:
         leds = LedDataService
         led_list: list = leds.get_leds()
         print("GREEN LED OFF")
-        l = led_list[position].completion_led
+        l = led_list[position- 1].completion_led
 
     # l.off()
 

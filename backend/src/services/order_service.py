@@ -17,6 +17,20 @@ from controller.raspi_controller import RaspiController
 
 
 class OrderService:
+    def __init__(self):
+        self.sorted_orders = []
+
+    def configure(self):
+        db_service = DatabaseService()
+
+        grid_config = db_service.getGrid()
+        positions = self.create_positions(grid_config)
+        self.sorted_orders = db_service.getOrders(positions[-1].position)
+
+        # Asigno las posiciones disponibles
+        for position, order in zip(positions, self.sorted_orders):
+            order.set_position(position)
+
     def create_positions(self, grid: GridConfig):
         positions = []
         position = 1
@@ -29,28 +43,22 @@ class OrderService:
                 position += 1
         return positions
 
-    def get_orders(self) -> SortedOrder:
-        db_service = DatabaseService()
+    def search_item(self, item):
+        rasp_controller = RaspiController()
+        button_service = ButtonDataService()
+        pos_order = self.search_position_of_order(item)
+        rasp_controller.turn_searchled_on(pos_order)
+        button = button_service.define_button(pos_order)
+        button.wait_for_press()
+        rasp_controller.button_pressed(pos_order)
+        self.remove_from_order(item)
 
-        grid_config_dict = db_service.getGrid()
-        grid_config = GridConfig.fromDict(grid_config_dict)
-        positions = self.create_positions(grid_config)
-        order_dict = db_service.getOrders(positions[-1].position)
-
-        sorted_order = []
-        for order, position in zip(order_dict, positions):
-            items = []
-            for item in order_dict[order]:
-                items.append(Item.fromDict(item))
-            sorted_order.append(Order(position, items))
-        return sorted_order
-
-    def search_position_of_order(self, sorted_orders, item_A: Item):
+    def search_position_of_order(self, item_A: Item):
         """
         Returns the position of the order that contains the specified item.
 
         """
-        for order in sorted_orders:
+        for order in self.sorted_orders:
             for item_B in order.items:
                 if item_B.item_name == item_A.item_name:
                     print(f"IEM FOUND: {item_B.item_name}")
@@ -68,7 +76,7 @@ class OrderService:
     """
 
     def search_by_name(
-        self, sorted_order: list[Order], search_name: str = None
+        self, search_name: str = None
     ) -> Item:
         """
         Searches for an item in the sorted orders by its name, starting with the given search term.
@@ -89,7 +97,7 @@ class OrderService:
             search_name = (
                 search_name.lower()
             )  # Normalize input for case-insensitive comparison
-            for order in sorted_order:
+            for order in self.sorted_orders:
                 for item in order.items:
                     if item.item_name.lower().startswith(search_name):
                         return item
@@ -98,21 +106,21 @@ class OrderService:
         print(f"No items found matching the name '{search_name}'.")
         return None
 
-    def search_by_farma_id(self, sorted_order: list[Order], farma_id: int) -> Item:
-        for order in sorted_order:
+    def search_by_farma_id(self, farma_id: int) -> Item:
+        for order in self.sorted_orders:
             for item in order.items:
                 if item.farma_id == farma_id:
                     return item
         return None
 
-    def search_by_barcode(self, sorted_order: list[Order], barcode_id: int) -> Item:
-        for order in sorted_order:
+    def search_by_barcode(self, barcode_id: int) -> Item:
+        for order in self.sorted_orders:
             for item in order.items:
                 if item.bar_code == barcode_id:
                     return item
         return None
 
-    def remove_from_order(self, sorted_order: list[Order], item: Item) -> list[Order]:
+    def remove_from_order(self, item: Item):
         """
         Removes the specified item from the sorted orders, if found.
 
@@ -124,48 +132,37 @@ class OrderService:
             list[Order]: The updated list of orders after removing the item.
         """
         if item is not None:
-            for order in sorted_order:
+            for order in self.sorted_orders:
                 if item in order.items:
-                    order.items.remove(item)
+                    order.remove_items(item)
                     print(
                         f"Removed item '{item.item_name}' from order at position {order.position}."
                     )
-                    return sorted_order
 
-                if order is None:
+                if order.is_empty():
                     rasp_controller = RaspiController()
-                    rasp_controller.turn_completionled_on
-                    return sorted_order
+                    rasp_controller.turn_completionled_on()
 
             print("Item not found in any order.")
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
-        return sorted_order  # Always return the original list
 
-    def print_orders(self, orders: SortedOrder):
+    def print_orders(self):
         """
         Prints the current state of orders.
 
         Args:
             orders (list[Order]): The list of orders to print.
         """
-        if not orders:
+        if not self.sorted_orders:
             print("No orders available.")
             return
 
         print("Current orders:")
-        for order in orders:
+        for order in self.sorted_orders:
             print(f"Position {order.position}:")
             for item in order.items:
                 print(f"    {item.item_name}")
 
-    def search_item(self, item, sorted_order):
-        rasp_controller = RaspiController()
-        button_service = ButtonDataService()
-        pos_order = self.search_position_of_order(sorted_order, item)
-        rasp_controller.turn_searchled_on(pos_order)
-        button = button_service.define_button(pos_order)
-        button.wait_for_press()
-        rasp_controller.button_pressed(pos_order)
-        sorted_order = self.remove_from_order(sorted_order, item)
-        return sorted_order
+
+service = OrderService()
