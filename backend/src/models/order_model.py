@@ -4,13 +4,30 @@ from models.item_model import Item
 
 
 class Order:
+    """
+    Represents an order that contains a list of items and an associated position in a grid.
+
+    Attributes:
+        items (list[Item]): A list of items in the order.
+        position (Position): The grid position assigned to the order.
+    """
+
     def __init__(self, items: list[Item]):
+        """
+        Initializes an Order instance.
+
+        Args:
+            items (list[Item]): A list of items in the order.
+        """
         self.items = items
         self.position = None
 
     def is_empty(self) -> bool:
         """
-        Returns True if the order has no items, False otherwise.
+        Checks if the order is empty (contains no items).
+
+        Returns:
+            bool: True if the order has no items, False otherwise.
         """
         return not self.items
 
@@ -19,9 +36,15 @@ class Order:
         Removes the specified item from the order.
 
         Args:
-            item (Item): The item to remove.
+            item (Item): The item to remove from the order.
         """
         self.items.remove(item)
 
     def set_position(self, position: Position):
+        """
+        Assigns a grid position to the order.
+
+        Args:
+            position (Position): The position to assign to the order.
+        """
         self.position = position

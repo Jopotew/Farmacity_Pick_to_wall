@@ -16,9 +16,3 @@ class LedDataService:
         for key, value in led_data_provider.led_pos.items():
             leds.append(LedPositionModel.fromDict(key, value))
         return leds
-
-
-# led = LedDataService()
-# leds = led.get_leds()
-# print(leds[0].search_led.raspi_pos)
-# # print(leds[Posicion de la grilla].search_led)

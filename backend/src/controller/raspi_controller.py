@@ -1,7 +1,7 @@
 import sys
 import os
 
-# Agregar el directorio `src` al path
+# Add the `src` directory to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "..")
 sys.path.append(src_path)
@@ -14,54 +14,65 @@ from services.led_data_service import LedDataService
 
 
 class RaspiController:
-    leds: LedPositionModel  # roja verde posicion
-    button: ButtonPositionModel
+    """
+    Controller class for managing Raspberry Pi GPIOs, including LEDs and buttons.
+    """
 
-    def turn_searchled_on(self, position):
+    leds: LedPositionModel  # LED model with red, green, and position LEDs
+    button: ButtonPositionModel  # Button model for input detection
+
+    def turn_search_led(self, status: bool, position: int):
+        """
+        Turns the search LED on or off at a specified position.
+
+        Args:
+            status (bool): True to turn the LED on, False to turn it off.
+            position (int): The position of the LED to control.
+        """
         leds = LedDataService
         led_list = leds.get_leds()
-        print("RED LED ON")
-        l = led_list[position - 1].search_led
-        l.on()
 
-    def turn_searchled_off(self, position):
-        leds = LedDataService
-        led_list: list = leds.get_leds()
-        print("RED LED OFF")
-        l = led_list[position - 1].search_led
-        l.off()
+        if status:
+            l = led_list[position - 1].search_led
+            l.on()
+        else:
+            l = led_list[position - 1].search_led
+            l.off()
 
-    def turn_completionled_on(self, position):
+    def turn_completion_led(self, status: bool, position: int):
+        """
+        Turns the completion LED on or off at a specified position.
+
+        Args:
+            status (bool): True to turn the LED on, False to turn it off.
+            position (int): The position of the LED to control.
+        """
         leds = LedDataService
         led_list = leds.get_leds()
-        print("GREEN LED ON")
-        l = led_list[position - 1].completion_led
-        l.on()
 
-    def turn_completionled_off(self, position):
-        leds = LedDataService
-        led_list: list = leds.get_leds()
-        print("GREEN LED OFF")
-        l = led_list[position - 1].completion_led
-        l.off()
+        if status:
+            l = led_list[position - 1].completion_led
+            l.on()
+        else:
+            l = led_list[position - 1].completion_led
+            l.off()
 
-    def button_pressed(self, position):
+    def button_pressed(self, position: int):
         """
-        Called when is_button_pressed() is triggered
+        Handles the event when a button is pressed at a specific position.
+
+        Args:
+            position (int): The position of the button that was pressed.
         """
-        self.turn_searchled_off(position)
+        self.turn_search_led(False, position)
 
     def clear_gpios(self):
-
-        print("Cleaning up GPIO...")
+        """
+        Resets all GPIOs by turning off all LEDs at all positions.
+        """
         leds = LedDataService
-        led_list: list = leds.get_leds()
-        pos = 0
-        for position in led_list:
-            print("-----------------------------")
-            print(position)
-            led_list[pos].search_led.off()
-            led_list[pos].completion_led.off()
-            pos = +1
-            print(position)
-            print("-----------------------------")
+        led_list = leds.get_leds()
+
+        for position, led in enumerate(led_list, start=1):
+            self.turn_completion_led(False, position)
+            self.turn_search_led(False, position)

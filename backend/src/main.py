@@ -5,13 +5,31 @@ from ui.menu_ui import MenuUi
 from ui.console_ui import Console
 
 """
-cambiar leds y buttons en leds y buttons
-
+This script handles the main flow of a program for order management, integrating user input 
+via the console and menu interfaces, managing LED and button configurations, and interfacing 
+with Raspberry Pi hardware for GPIO control.
 """
 
 
 def main():
+    """
+    Main function that manages the execution of the program, handling user input and controlling
+    the flow between different modes (manual setup or barcode scanning). It interacts with various
+    services, controllers, and user interfaces to complete the necessary actions.
 
+    The flow is as follows:
+    1. Menu UI and Console UI are initialized.
+    2. The order service is configured.
+    3. The user is presented with a menu of options.
+    4. If the user chooses the manual setup option (Option 1), the program allows for searching
+       orders by name, ID, or barcode, and printing orders. This continues until the wave is completed.
+    5. If the user selects the barcode scanning option (Option 2), the program continuously searches
+       for barcodes until the wave is completed.
+    6. Finally, the program clears any Raspberry Pi GPIO states before exiting.
+
+    Note:
+        The `RaspiController` instance is used to ensure that all GPIO states are cleared after execution.
+    """
     menu_ui = MenuUi()
     console_ui = Console()
     order_service.configure()
@@ -41,10 +59,8 @@ def main():
 
         if option == 2:
             while True:
-
                 if order_service.check_wave_completion():
                     break
-
                 menu_controller.search_barcode()
 
     finally:
