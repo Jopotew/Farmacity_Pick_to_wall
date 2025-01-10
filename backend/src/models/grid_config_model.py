@@ -8,7 +8,6 @@ class GridConfig:
     columns: int
     unavailable_positions: Optional[list[int]] = None
 
-
     @staticmethod
     def fromDict(diccionario):
         return GridConfig(
@@ -16,5 +15,3 @@ class GridConfig:
             diccionario["gridcol"],
             diccionario.get("unavailable_positions"),
         )
-
-

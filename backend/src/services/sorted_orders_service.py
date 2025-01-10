@@ -3,7 +3,6 @@ from models.grid_config_model import GridConfig
 from models.order_model import Order
 
 
-
 class SortedOrder:
     positions: list[Position]
 

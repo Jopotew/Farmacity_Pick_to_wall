@@ -1,7 +1,8 @@
-from services.bcode_scanner_service import ScannerService
+from controller.main_menu_control import menu_controller as menu_controller
+from services.order_service import service as order_service
 from controller.raspi_controller import RaspiController
 from ui.menu_ui import MenuUi
-from services.order_service import service as order_service
+from ui.console_ui import Console
 
 """
 cambiar leds y buttons en leds y buttons
@@ -10,41 +11,41 @@ cambiar leds y buttons en leds y buttons
 
 
 def main():
-    menu_ui = MenuUi()
 
+    menu_ui = MenuUi()
+    console_ui = Console()
     order_service.configure()
 
     try:
-        while True:
+        option = console_ui.menu()
+        if option == 1:
+            print("Manual setup")
+            while True:
+                if order_service.check_wave_completion():
+                    break
+                option = menu_ui.menu()
+                if option == 1:
+                    menu_controller.search_name()
 
-            
-            option = menu_ui.menu()
-            if option == 1:  # Name
-                name = input("Enter the item name to search: ")
-                item = order_service.search_by_name(name)
-                sorted_order = order_service.search_item(item)
+                elif option == 2:  # farma_id
+                    menu_controller.search_id()
 
-            elif option == 2:  # farma_id
-                id = int(input("Enter the item's Farmacity Id Code  to search: "))
-                item = order_service.search_by_farma_id(id)
-                sorted_order = order_service.search_item(item)
+                elif option == 3:  # barcode
+                    menu_controller.search_barcode()
 
-            elif option == 3:  # barcode
-                barcode = int(input("Enter the item's barcode to search: "))
-                item = order_service.search_by_barcode(barcode)
-                sorted_order = order_service.search_item(item)
+                elif option == 4:
+                    menu_controller.print_orders()
 
-            elif option == 4:  # camara
-                scanner = ScannerService()
-                barcode = scanner.scan_and_fetch_product()
-                item = order_service.search_by_barcode(barcode)
-                sorted_order = order_service.search_item(item)
+                elif option == 5:  # exit
+                    break
 
-            elif option == 5:
-                order_service.print_orders()
+        if option == 2:
+            while True:
 
-            elif option == 6:  # exit
-                break
+                if order_service.check_wave_completion():
+                    break
+
+                menu_controller.search_barcode()
 
     finally:
         raspi_controller = RaspiController()

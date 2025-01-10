@@ -16,5 +16,5 @@ class ButtonDataService:
         return button
 
     def define_button(self, position):
-        button = self.get_button()[position]
+        button = self.get_button()[position - 1]
         return button

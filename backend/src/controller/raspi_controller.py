@@ -21,47 +21,47 @@ class RaspiController:
         leds = LedDataService
         led_list = leds.get_leds()
         print("RED LED ON")
-        l = led_list[position -1 ].search_led
-
-        # l.on()
+        l = led_list[position - 1].search_led
+        l.on()
 
     def turn_searchled_off(self, position):
         leds = LedDataService
         led_list: list = leds.get_leds()
         print("RED LED OFF")
-        l = led_list[position -1 ].search_led
-        # l.off()
+        l = led_list[position - 1].search_led
+        l.off()
 
     def turn_completionled_on(self, position):
         leds = LedDataService
         led_list = leds.get_leds()
         print("GREEN LED ON")
-        l = led_list[position -1 ].completion_led
-
-    # l.on()
+        l = led_list[position - 1].completion_led
+        l.on()
 
     def turn_completionled_off(self, position):
         leds = LedDataService
         led_list: list = leds.get_leds()
         print("GREEN LED OFF")
-        l = led_list[position- 1].completion_led
-
-    # l.off()
+        l = led_list[position - 1].completion_led
+        l.off()
 
     def button_pressed(self, position):
         """
         Called when is_button_pressed() is triggered
         """
-
         self.turn_searchled_off(position)
 
-        return
-    
-
     def clear_gpios(self):
+
         print("Cleaning up GPIO...")
         leds = LedDataService
         led_list: list = leds.get_leds()
+        pos = 0
         for position in led_list:
-            led_list[position]["red"].off()
-            led_list[position]["green"].off()
+            print("-----------------------------")
+            print(position)
+            led_list[pos].search_led.off()
+            led_list[pos].completion_led.off()
+            pos = +1
+            print(position)
+            print("-----------------------------")

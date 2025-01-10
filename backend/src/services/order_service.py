@@ -18,7 +18,8 @@ from controller.raspi_controller import RaspiController
 
 class OrderService:
     def __init__(self):
-        self.sorted_orders = []
+        self.sorted_orders: list = []
+        self.wave_completed: bool = False
 
     def configure(self):
         db_service = DatabaseService()
@@ -29,9 +30,10 @@ class OrderService:
 
         # Asigno las posiciones disponibles
         for position, order in zip(positions, self.sorted_orders):
+            print(f"Asigando posición {position} a la orden {order}")
             order.set_position(position)
 
-    def create_positions(self, grid: GridConfig):
+    def create_positions(self, grid: GridConfig) -> Position:
         positions = []
         position = 1
         for row in range(grid.rows):
@@ -47,13 +49,14 @@ class OrderService:
         rasp_controller = RaspiController()
         button_service = ButtonDataService()
         pos_order = self.search_position_of_order(item)
+        print("POS ORDER : ", pos_order)
         rasp_controller.turn_searchled_on(pos_order)
         button = button_service.define_button(pos_order)
-        button.wait_for_press()
+        button.input()
         rasp_controller.button_pressed(pos_order)
-        self.remove_from_order(item)
+        self.remove_from_order(item, pos_order)
 
-    def search_position_of_order(self, item_A: Item):
+    def search_position_of_order(self, item_A: Item) -> Position:
         """
         Returns the position of the order that contains the specified item.
 
@@ -61,9 +64,7 @@ class OrderService:
         for order in self.sorted_orders:
             for item_B in order.items:
                 if item_B.item_name == item_A.item_name:
-                    print(f"IEM FOUND: {item_B.item_name}")
-                    pos_order = order.position.position
-                    print("POSITION OF THE ORDER: ", pos_order)
+                    pos_order: Position = order.position.position
                     return pos_order
 
     # TODO:
@@ -75,9 +76,7 @@ class OrderService:
     esto deberia preguntarte cual de los dos estas buscando y que te devuelva ese. 
     """
 
-    def search_by_name(
-        self, search_name: str = None
-    ) -> Item:
+    def search_by_name(self, search_name: str = None) -> Item:
         """
         Searches for an item in the sorted orders by its name, starting with the given search term.
 
@@ -106,21 +105,21 @@ class OrderService:
         print(f"No items found matching the name '{search_name}'.")
         return None
 
-    def search_by_farma_id(self, farma_id: int) -> Item:
+    def search_by_farma_id(self, farma_id: str) -> Item:
         for order in self.sorted_orders:
             for item in order.items:
                 if item.farma_id == farma_id:
                     return item
         return None
 
-    def search_by_barcode(self, barcode_id: int) -> Item:
+    def search_by_barcode(self, barcode_id: str) -> Item:
         for order in self.sorted_orders:
             for item in order.items:
                 if item.bar_code == barcode_id:
                     return item
         return None
 
-    def remove_from_order(self, item: Item):
+    def remove_from_order(self, item: Item, pos_order):
         """
         Removes the specified item from the sorted orders, if found.
 
@@ -141,9 +140,8 @@ class OrderService:
 
                 if order.is_empty():
                     rasp_controller = RaspiController()
-                    rasp_controller.turn_completionled_on()
+                    rasp_controller.turn_completionled_on(pos_order)
 
-            print("Item not found in any order.")
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
 
@@ -163,6 +161,22 @@ class OrderService:
             print(f"Position {order.position}:")
             for item in order.items:
                 print(f"    {item.item_name}")
+
+    def is_wave_complete(self) -> bool:
+        self.check_wave_completion()
+        if self.wave_completed:
+            return True
+        else:
+            return False
+
+    def check_wave_completion(self) -> bool:
+        for order in self.sorted_orders:
+            if not order.is_empty():
+                self.wave_completed = False
+                return
+        self.wave_completed = True
+        print("Wave completed!")
+        return
 
 
 service = OrderService()

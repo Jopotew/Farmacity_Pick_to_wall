@@ -1,6 +1,8 @@
 import sys
+
 sys.path.append(
-    'd:\\Archivos del Programa\\Proyectos\\Farma\\Farmacity_Pick_to_wall\\src')
+    "d:\\Archivos del Programa\\Proyectos\\Farma\\Farmacity_Pick_to_wall\\src"
+)
 
 
 from dataclasses import dataclass
@@ -12,7 +14,6 @@ class LedPositionModel:
     grid_pos: int
     search_led: LedModel  # rojo
     completion_led: LedModel  # verde
-    
 
     @staticmethod
     def fromDict(grid_pos: int, dic: dict):
@@ -22,7 +23,3 @@ class LedPositionModel:
             LedModel(leds[0][0], leds[0][1]),
             LedModel(leds[1][0], leds[1][1]),
         )
-
-
-
- 

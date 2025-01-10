@@ -1,10 +1,9 @@
 import sys
 import os
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "..")
 sys.path.append(src_path)
-
-
 
 
 import pymysql
@@ -28,7 +27,7 @@ class DatabaseService:
                 password="Farmacity2024",  # Contraseña
                 database="trabajofarmacity",  # Nombre de la base de datos
                 cursorclass=pymysql.cursors.DictCursor,  # Para obtener los resultados como diccionario
-                port=3306
+                port=3306,
             )
 
             # Intentamos crear el cursor solo si la conexión es exitosa
@@ -83,7 +82,7 @@ class DatabaseService:
                 """
                 self.cursor.execute(consulta_items, (id_order_assign,))
                 items = self.cursor.fetchall()
-                order = Order(items=map(Item.fromDict, items))
+                order = Order(items=list(map(Item.fromDict, items)))
                 order_wave.append(order)
 
             return order_wave
@@ -91,3 +90,6 @@ class DatabaseService:
         except pymysql.MySQLError as e:
             print(f"Error al ejecutar la consulta: {e}")
             return []
+
+    def change_order_status(self, status):
+        pass

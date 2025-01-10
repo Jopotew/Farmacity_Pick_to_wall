@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Item:
     farma_id: str

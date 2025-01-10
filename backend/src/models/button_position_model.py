@@ -5,11 +5,11 @@ from gpiozero import Button
 @dataclass
 class ButtonPositionModel:
     grid_pos: int
-    raspi_pos: int  # Button
+    button: Button  # Button
 
     @staticmethod
-    def fromDict(grid_pos: int, raspi_pos: int):
-        return ButtonPositionModel(
-            grid_pos,
-            raspi_pos
-        )
+    def fromDict(grid_pos: int, button: Button):
+        return ButtonPositionModel(grid_pos, button)
+
+    def input(self):
+        self.button.wait_for_press()

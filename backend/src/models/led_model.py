@@ -5,10 +5,10 @@ from gpiozero import LED
 @dataclass
 class LedModel:
     led_color: str
-    raspi_pos: int  # led
+    raspi_pos: LED  # led
 
-    # def on(self):
-    #     self.raspi_pos.on()
+    def on(self):
+        self.raspi_pos.on()
 
-    # def off(self):
-    #     self.raspi_pos.off()
+    def off(self):
+        self.raspi_pos.off()
