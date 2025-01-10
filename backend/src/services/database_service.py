@@ -49,24 +49,23 @@ class DatabaseService:
         self.cursor = None
         self.connection = None
         try:
-            # Conexión a la base de datos usando pymysql
+
             self.connection = pymysql.connect(
                 host="localhost",  # Dirección del servidor
                 user="ljuan",  # Usuario
                 password="Farmacity2024",  # Contraseña
                 database="trabajofarmacity",  # Nombre de la base de datos
-                cursorclass=pymysql.cursors.DictCursor,  # Para obtener los resultados como diccionario
+                cursorclass=pymysql.cursors.DictCursor,
                 port=3306,
             )
 
-            # Intentamos crear el cursor solo si la conexión es exitosa
             self.cursor = self.connection.cursor()
 
         except pymysql.MySQLError as e:
             print(f"Error al conectar con MySQL: {e}")
 
         finally:
-            # Aseguramos el cierre adecuado de la conexión y el cursor
+
             if self.connection and not self.connection.open:
                 self.cursor.close()
                 self.connection.close()
@@ -89,7 +88,8 @@ class DatabaseService:
         """
         Retrieves a limited number of orders and their related items from the database.
 
-        This method fetches orders assigned to the grid positions and their associated items.
+        This method fetches orders assigned to the grid positions and their associated items,
+        while ensuring that only orders with a valid status (id_status = 1) are included.
 
         Args:
             grid_positions (int): The maximum number of orders to retrieve.
@@ -98,12 +98,14 @@ class DatabaseService:
             list[Order]: A list of Order objects, each containing related Item objects.
         """
         try:
+
             consulta_orders = """
             SELECT id_order_assign 
             FROM order_assign
+            WHERE id_status = 1
             LIMIT %s;
             """
-            self.cursor.execute(consulta_orders, (grid_positions,))
+            self.cursor.execute(consulta_orders, (grid_positions))
             orders = self.cursor.fetchall()
 
             if not orders:
@@ -122,7 +124,10 @@ class DatabaseService:
                 """
                 self.cursor.execute(consulta_items, (id_order_assign,))
                 items = self.cursor.fetchall()
-                order = Order(items=list(map(Item.fromDict, items)))
+
+                order = Order(
+                    items=list(map(Item.fromDict, items)), order_id=id_order_assign
+                )
                 order_wave.append(order)
 
             return order_wave
@@ -131,14 +136,45 @@ class DatabaseService:
             print(f"Error al ejecutar la consulta: {e}")
             return []
 
-    def change_order_status(self, status):
+    def change_order_status(self, id_order_assign: int, status: int):
         """
-        Placeholder method to change the status of an order.
+        Changes the status of an order in the database.
 
-        This method is not implemented yet but is intended to update the status of an order
-        in the database.
+        This method updates the `id_status` of a specific order in the `order_assign` table.
 
         Args:
-            status (str): The new status of the order.
+            id_order_assign (int): The ID of the order to update.
+            status (int): The new status of the order (2 for packing, 3 for dispatch).
+
+        Returns:
+            bool: True if the status was successfully updated, False otherwise.
         """
-        pass
+        try:
+            # Verificar que el estado esté entre los valores válidos (2 o 3)
+            if status not in [2, 3]:
+                print(
+                    "Estado no válido. El estado debe ser 2 (empaquetado) o 3 (despacho)."
+                )
+                return False
+
+            consulta_update_status = """
+            UPDATE order_assign
+            SET id_status = %s
+            WHERE id_order_assign = %s;
+            """
+            self.cursor.execute(consulta_update_status, (status, id_order_assign))
+
+            self.connection.commit()
+
+            if self.cursor.rowcount > 0:
+                print(
+                    f"El estado de la orden {id_order_assign} ha sido actualizado a {status}."
+                )
+                return True
+            else:
+                print(f"No se encontró la orden con ID {id_order_assign}.")
+                return False
+
+        except pymysql.MySQLError as e:
+            print(f"Error al ejecutar la consulta: {e}")
+            return False
