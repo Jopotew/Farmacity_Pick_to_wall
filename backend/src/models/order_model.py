@@ -10,17 +10,20 @@ class Order:
     Attributes:
         items (list[Item]): A list of items in the order.
         position (Position): The grid position assigned to the order.
+        order_id (str): A unique identifier for the order.
     """
 
-    def __init__(self, items: list[Item]):
+    def __init__(self, items: list[Item], order_id: str):
         """
         Initializes an Order instance.
 
         Args:
             items (list[Item]): A list of items in the order.
+            order_id (str): A unique identifier for the order.
         """
-        self.items = items
-        self.position = None
+        self.items: list[Item] = items
+        self.position: Position = None
+        self.order_id: str = order_id
 
     def is_empty(self) -> bool:
         """

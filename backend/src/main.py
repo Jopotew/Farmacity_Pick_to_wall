@@ -1,5 +1,5 @@
 from controller.main_menu_control import menu_controller as menu_controller
-from services.order_service import service as order_service
+from src.services.wave_service import service as wave_service
 from controller.raspi_controller import RaspiController
 from ui.menu_ui import MenuUi
 from ui.console_ui import Console
@@ -32,14 +32,14 @@ def main():
     """
     menu_ui = MenuUi()
     console_ui = Console()
-    order_service.configure()
+    wave_service.configure()
 
     try:
         option = console_ui.menu()
         if option == 1:
             print("Manual setup")
             while True:
-                if order_service.check_wave_completion():
+                if wave_service.check_wave_completion():
                     break
                 option = menu_ui.menu()
                 if option == 1:
@@ -59,7 +59,7 @@ def main():
 
         if option == 2:
             while True:
-                if order_service.check_wave_completion():
+                if wave_service.check_wave_completion():
                     break
                 menu_controller.search_barcode()
 

@@ -1,23 +1,18 @@
 import sys
 import os
-
-# Setting up paths to import custom modules
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "..")
 sys.path.append(src_path)
 
-# Importing custom modules
 from models.grid_config_model import GridConfig
 from models.position_model import Position
 from models.item_model import Item
-from models.order_model import Order
 from services.database_service import DatabaseService
-from services.sorted_orders_service import SortedOrder
 from services.button_data_service import ButtonDataService
 from controller.raspi_controller import RaspiController
 
 
-class OrderService:
+class WaveService:
     """
     Handles order management and position assignment for a "Pick-to-Wall" system.
     """
@@ -44,7 +39,6 @@ class OrderService:
         self.sorted_orders = db_service.getOrders(positions[-1].position)
 
         for position, order in zip(positions, self.sorted_orders):
-            print(f"Assigning position {position} to order {order}")
             order.set_position(position)
 
     def create_positions(self, grid: GridConfig) -> Position:
@@ -175,11 +169,30 @@ class OrderService:
                     print(
                         f"Removed item '{item.item_name}' from order at position {pos_order}."
                     )
-                if order.is_empty():
-                    rasp_controller = RaspiController()
-                    rasp_controller.turn_completion_led(True, pos_order)
+                self.order_complete(order, pos_order)
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
+
+
+    def order_complete(self, order, pos_order):
+        """
+        Marks the order as complete and triggers the completion LED on the Raspberry Pi.
+
+        This method checks if the provided order is empty. If the order is empty,
+        it triggers the Raspberry Pi controller to turn on the completion LED 
+        at the specified position.
+
+        Args:
+            order (Order): The order object that is being checked for completion.
+            pos_order (Position): The position of the order containing the item.
+
+        """
+        if order.is_empty():
+            rasp_controller = RaspiController()
+            rasp_controller.turn_completion_led(True, pos_order)
+            db_service = DatabaseService()
+            db_service.update_order_status(order.order_id, 2)
+
 
     def print_orders(self):
         """
@@ -221,4 +234,4 @@ class OrderService:
         return
 
 
-service = OrderService()
+service = WaveService()

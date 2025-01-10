@@ -4,7 +4,7 @@ from gpiozero import Button
 # Each button corresponds to a GPIO pin on the Raspberry Pi.
 
 button_pos = {
-    1: Button(10),  # Button mapped to GPIO pin 10
-    2: Button(9),  # Button mapped to GPIO pin 9
-    3: Button(11),  # Button mapped to GPIO pin 11
+    1: Button(10),  
+    2: Button(9), 
+    3: Button(11),  
 }
