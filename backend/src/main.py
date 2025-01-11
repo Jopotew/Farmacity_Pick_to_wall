@@ -35,33 +35,33 @@ def main():
     wave_service.configure()
 
     try:
-        option = console_ui.menu()
-        if option == 1:
-            print("Manual setup")
-            while True:
-                if wave_service.check_wave_completion():
-                    break
-                option = menu_ui.menu()
-                if option == 1:
-                    menu_controller.search_name()
+        while True:
+            option = console_ui.menu()
+            if option == 1:
+                while True:
+                    if wave_service.check_wave_completion():
+                        break
+                    option = menu_ui.menu()
+                    if option == 1:
+                        menu_controller.search_name()
 
-                elif option == 2:  # farma_id
-                    menu_controller.search_id()
+                    elif option == 2:  # farma_id
+                        menu_controller.search_id()
 
-                elif option == 3:  # barcode
+                    elif option == 3:  # barcode
+                        menu_controller.search_barcode()
+
+                    elif option == 4:
+                        menu_controller.print_orders()
+
+                    elif option == 5:  # exit
+                        break
+
+            if option == 2:
+                while True:
+                    if wave_service.check_wave_completion():
+                        break
                     menu_controller.search_barcode()
-
-                elif option == 4:
-                    menu_controller.print_orders()
-
-                elif option == 5:  # exit
-                    break
-
-        if option == 2:
-            while True:
-                if wave_service.check_wave_completion():
-                    break
-                menu_controller.search_barcode()
 
     finally:
         raspi_controller = RaspiController()
