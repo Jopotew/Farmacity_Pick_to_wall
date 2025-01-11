@@ -1,5 +1,5 @@
 from controller.main_menu_control import menu_controller as menu_controller
-from src.services.wave_service import service as wave_service
+from services.wave_service import service as wave_service
 from controller.raspi_controller import RaspiController
 from ui.menu_ui import MenuUi
 from ui.console_ui import Console

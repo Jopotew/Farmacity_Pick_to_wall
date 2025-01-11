@@ -1,4 +1,4 @@
-from src.services.wave_service import service as wave_service
+from services.wave_service import service as wave_service
 
 
 class MenuController:

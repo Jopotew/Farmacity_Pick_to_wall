@@ -1,5 +1,6 @@
 import sys
 import os
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "..")
 sys.path.append(src_path)
@@ -173,13 +174,12 @@ class WaveService:
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
 
-
     def order_complete(self, order, pos_order):
         """
         Marks the order as complete and triggers the completion LED on the Raspberry Pi.
 
         This method checks if the provided order is empty. If the order is empty,
-        it triggers the Raspberry Pi controller to turn on the completion LED 
+        it triggers the Raspberry Pi controller to turn on the completion LED
         at the specified position.
 
         Args:
@@ -191,8 +191,7 @@ class WaveService:
             rasp_controller = RaspiController()
             rasp_controller.turn_completion_led(True, pos_order)
             db_service = DatabaseService()
-            db_service.update_order_status(order.order_id, 2)
-
+            db_service.change_order_status(order.order_id, 2)
 
     def print_orders(self):
         """
