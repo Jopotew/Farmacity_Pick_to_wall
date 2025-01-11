@@ -97,30 +97,59 @@ class WaveService:
                 if item_B.item_name == item_A.item_name:
                     return order.position.position
 
-    def search_by_name(self, search_name: str = None) -> Item:
+    def search_by_name(self, search_name: str) -> Item:
         """
         Searches for an item in the sorted orders by its name, starting with the given search term.
+
+        If multiple items match the search term, it prompts the user to choose one of them.
 
         Args:
             search_name (str): The partial or full name of the item to search for.
 
         Returns:
-            Item: The first item that matches the search name, or None if no match is found.
+            Item: The selected item that matches the search name, or None if no match is found.
         """
         if not search_name or search_name.strip() == "":
             print("Search name cannot be empty. Please provide a valid name.")
             return None
         else:
-            search_name = (
-                search_name.lower()
-            )  # Normalize input for case-insensitive comparison
+            search_name = search_name.lower()
+            matching_items = []
+
             for order in self.sorted_orders:
                 for item in order.items:
                     if item.item_name.lower().startswith(search_name):
-                        return item
+                        matching_items.append(item)
 
-        print(f"No items found matching the name '{search_name}'.")
-        return None
+            if len(matching_items) == 0:
+                print(f"No items found matching the name '{search_name}'.")
+                return None
+            elif len(matching_items) == 1:
+
+                return matching_items[0]
+            else:
+
+                print(
+                    f"Se han encontrado {len(matching_items)} items que comienzan con '{search_name}':"
+                )
+                for idx, item in enumerate(matching_items, start=1):
+                    print(f"{idx}. {item.item_name}")
+
+                while True:
+                    try:
+                        choice = int(
+                            input(
+                                f"¿Cuál de los {len(matching_items)} items buscas? Ingresa el número: "
+                            )
+                        )
+                        if 1 <= choice <= len(matching_items):
+                            return matching_items[choice - 1]
+                        else:
+                            print(
+                                "Opción inválida. Por favor ingresa un número válido."
+                            )
+                    except ValueError:
+                        print("Entrada no válida. Por favor ingresa un número.")
 
     def search_by_farma_id(self, farma_id: str) -> Item:
         """
