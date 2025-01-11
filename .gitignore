@@ -163,3 +163,4 @@ cython_debug/
 
 #files
 backend\src\providers\keys\de_keys.py
+backend/src/providers/keys/db_keys.py
