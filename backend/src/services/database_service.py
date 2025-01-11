@@ -9,6 +9,7 @@ import pymysql
 from models.grid_config_model import GridConfig
 from models.order_model import Order
 from models.item_model import Item
+from models.bd_keys_model import keys
 
 # from providers import orders
 
@@ -51,12 +52,12 @@ class DatabaseService:
         try:
 
             self.connection = pymysql.connect(
-                host="localhost",  # Dirección del servidor
-                user="ljuan",  # Usuario
-                password="Farmacity2024",  # Contraseña
-                database="trabajofarmacity",  # Nombre de la base de datos
+                host=keys.host,  # Dirección del servidor
+                user=keys.user,  # Usuario
+                password=keys.password,  # Contraseña
+                database=keys.database,  # Nombre de la base de datos
                 cursorclass=pymysql.cursors.DictCursor,
-                port=3306,
+                port=keys.port,
             )
 
             self.cursor = self.connection.cursor()

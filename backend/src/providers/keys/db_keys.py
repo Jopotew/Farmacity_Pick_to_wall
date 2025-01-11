@@ -1,0 +1,5 @@
+host = "localhost"
+port = "3306"
+password = "Farmacity2024"
+user = "root"
+database = "trabajofarmacity"
