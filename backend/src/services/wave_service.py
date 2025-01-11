@@ -15,7 +15,7 @@ from controller.raspi_controller import RaspiController
 
 class WaveService:
     """
-    Handles order management and position assignment for a "Pick-to-Wall" system.
+    Handles wave and order management and position assignment for a "Pick-to-Wall" system.
     """
 
     def __init__(self):
