@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            border: 2px solid black;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .input-field {
+            display: block;
+            width: 90%;
+            margin: 10px auto;
+            padding: 10px;
+            border: 2px solid red;
+            border-radius: 25px;
+            background-color: white;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: black;
+            background-color: #add8e6;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #87ceeb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ingrese su ID Farmacity</h1>
+        <input type="text" class="input-field" placeholder="Usuario">
+        <input type="password" class="input-field" placeholder="Contraseña">
+        <button class="button">Ingresar</button>
+    </div>
+</body>
+</html>
