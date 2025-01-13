@@ -27,21 +27,39 @@ if ($result->num_rows > 0) {
     $columnas = (int) $row["gridcol"];
     $posicionesInhabilitadas = $row["pos_unab"] ? explode(",", $row["pos_unab"]) : [];
 }
-// REVISAR: por las posiciones inhabilitadas, lógica de BD para tapar casillas.
-// Obtener los artículos por posición desde la tabla `order_wave` y `items`
-$sql = "SELECT items.item_name, order_wave.id_order_assign 
+
+// Obtener los artículos por orden (id_order_assign) desde la tabla `order_wave` y `items`
+$sql = "SELECT items.*, order_wave.id_order_assign 
         FROM order_wave 
-        JOIN items ON order_wave.id_item = items.id_item";
+        JOIN items ON order_wave.id_item = items.id_item
+        JOIN order_assign ON order_wave.id_order_assign = order_assign.id_order_assign
+        WHERE order_assign.id_status = 1"; // Solo artículos con status 1 (en preparación)
+
 $result = $conn->query($sql);
 
-$articulos = [];
+$articulosPorOrden = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $articulos[] = $row['item_name'];
+        $id_order_assign = $row['id_order_assign'];
+        // Obtener solo la primera palabra del nombre del artículo
+        $primeraPalabra = explode(' ', trim($row['item_name']))[0];
+        // Agrupar los ítems por id_order_assign
+        if (!isset($articulosPorOrden[$id_order_assign])) {
+            $articulosPorOrden[$id_order_assign] = []; // Crear un array vacío para la orden si no existe
+        }
+        // Agregar el ítem al array de la orden correspondiente
+        $articulosPorOrden[$id_order_assign][] = [
+            'nombre' => $primeraPalabra,
+            'datos_completos' => $row // Guardar todos los datos del ítem
+        ];
     }
 }
 
 $conn->close();
+
+// Simular arrays de ítems verificados (verde) y tachados (rojo)
+$itemsVerificados = ["renn", "actron"]; // Ejemplo de ítems verificados (verde)
+$itemsTachados = ["buscap"]; // Ejemplo de ítems tachados (rojo)
 ?>
 
 <!DOCTYPE html>
@@ -67,9 +85,10 @@ $conn->close();
             background-color: white;
             border: 2px solid black;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 12px;
             color: black;
             height: 100px;
             width: 100px;
@@ -101,26 +120,55 @@ $conn->close();
         .btn-custom:hover {
             background-color: #ff8c00; 
         }
+        .articulo {
+            font-size: 10px;
+            margin: 2px 0;
+            text-align: center;
+        }
+        .verificado {
+            color: green; /* Color verde para ítems verificados */
+            font-weight: bold; /* Texto en negrita */
+        }
+        .tachado {
+            color: red; /* Color rojo para ítems tachados */
+            text-decoration: line-through; /* Tachar el texto */
+            opacity: 0.7; /* Hacer el texto un poco transparente */
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Preparación</h1>
-        <div class="info">Cantidad de Pedidos restantes: <?php echo count($articulos); ?></div>
+        <div class="info">Cantidad de Pedidos restantes: <?php echo count($articulosPorOrden); ?></div>
         <div class="d-flex justify-content-center">
             <div id="tablero" class="d-flex flex-wrap" style="max-width: <?php echo $columnas * 110; ?>px;">
                 <?php
-                $contadorArticulos = 0;
-                for ($i = 1; $i <= $filas; $i++) {
-                    for ($j = 1; $j <= $columnas; $j++) {
-                        $posicion = ($i-1) * $columnas + $j;
-                        if (in_array((string)$posicion, $posicionesInhabilitadas)) {
-                            echo "<div class='casillero disabled'>X</div>";
-                        } else {
-                            $articulo = isset($articulos[$contadorArticulos]) ? $articulos[$contadorArticulos] : '';
-                            echo "<div class='casillero'>$articulo</div>";
-                            $contadorArticulos++;
+                $contadorPosiciones = 0;
+                foreach ($articulosPorOrden as $id_order_assign => $articulos) {
+                    $contadorPosiciones++;
+                    $posicion = $contadorPosiciones;
+                    if (in_array((string)$posicion, $posicionesInhabilitadas)) {
+                        echo "<div class='casillero disabled'>X</div>";
+                    } else {
+                        echo "<div class='casillero'>";
+                        echo "<strong>Orden: $id_order_assign</strong>";
+                        foreach ($articulos as $articulo) {
+                            // Convertir el nombre del ítem a un ID válido
+                            $idItem = str_replace(' ', '-', strtolower($articulo['nombre']));
+                            // Verificar si el ítem está verificado o tachado
+                            $claseVerificado = in_array(strtolower($articulo['nombre']), $itemsVerificados) ? 'verificado' : '';
+                            $claseTachado = in_array(strtolower($articulo['nombre']), $itemsTachados) ? 'tachado' : '';
+                            echo "<div id='$idItem' class='articulo $claseVerificado $claseTachado'>{$articulo['nombre']}</div>";
                         }
+                        echo "</div>";
+                    }
+                }
+                // Rellenar las posiciones restantes del tablero
+                for ($i = $contadorPosiciones + 1; $i <= $filas * $columnas; $i++) {
+                    if (in_array((string)$i, $posicionesInhabilitadas)) {
+                        echo "<div class='casillero disabled'>X</div>";
+                    } else {
+                        echo "<div class='casillero'></div>";
                     }
                 }
                 ?>
@@ -128,13 +176,19 @@ $conn->close();
         </div>
         <div class="mt-4">
             <button class="btn-custom" onclick="location.href='inicio.html'">Cancelar Ola</button>
-             <!-- Revisar funcionalidad del botón "BOTÓN" -->
-            <button class="btn-custom" onclick="location.href='OlaCompletada.html'">Botón</button>
+            <button class="btn-custom" onclick="location.href='OlaCompletada.html'">Finalizar</button>
         </div>
     </div>
 
     <!-- Bootstrap JS y dependencias -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        // Refrescar la página cada 5 segundos (5000 ms)
+        setTimeout(() => {
+            window.location.reload();
+        }, 10000);
+    </script>
 </body>
 </html>
