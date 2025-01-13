@@ -42,6 +42,7 @@ class WaveService:
 
         for position, order in zip(positions, self.sorted_orders):
             order.set_position(position)
+            db_service.update_order_position(order.order_id, order.position.position)
 
     def create_positions(self, grid: GridConfig) -> Position:
         """
@@ -197,12 +198,15 @@ class WaveService:
     def remove_from_order(self, item: Item, pos_order):
         """
         Removes the specified item from the order list and activates
-        the completion LED if the order is empty.
+        the completion LED if the order is empty. Modifies DB to change item status 
+        to selected (As a BOOL). Adds the item to a list of selected items. 
+
 
         Args:
             item (Item): The item to remove.
             pos_order (Position): The position of the order containing the item.
         """
+        
         if item is not None:
             for order in self.sorted_orders:
                 if item in order.items:
@@ -211,10 +215,11 @@ class WaveService:
                         f"Alocated Item  '{item.item_name}' from order at position {pos_order}."
                     )
                     self.item_positioned.append(item)
+                    db_service = DatabaseService()
+                    db_service.set_item_status(order.order_id, item.item_id)
                     if order.is_empty():
                         self.order_complete(order, pos_order)
-
-                
+                           
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
 

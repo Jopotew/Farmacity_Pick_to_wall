@@ -142,7 +142,7 @@ class DatabaseService:
             print(f"Error al ejecutar la consulta: {e}")
             return False
 
-    def item_selected(self, order_assign_id: int, item_id: int) -> bool:
+    def set_item_status(self, order_assign_id: int, item_id: int) -> bool:
         """
         Marks an item as selected in the order_wave table for a specific order_assign.
 
