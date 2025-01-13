@@ -141,7 +141,11 @@ $conn->close();
             <div id="tablero" class="d-flex flex-wrap" style="max-width: <?php echo $columnas * 110; ?>px;">
                 <?php
                 $contadorPosiciones = 0;
+                $totalPosiciones = $filas * $columnas; // Total de posiciones en el tablero
                 foreach ($articulosPorOrden as $id_order_assign => $articulos) {
+                    if ($contadorPosiciones >= $totalPosiciones) {
+                        break; // No exceder el tamaño del tablero
+                    }
                     $contadorPosiciones++;
                     $posicion = $contadorPosiciones;
                     if (in_array((string)$posicion, $posicionesInhabilitadas)) {
@@ -161,7 +165,7 @@ $conn->close();
                     }
                 }
                 // Rellenar las posiciones restantes del tablero
-                for ($i = $contadorPosiciones + 1; $i <= $filas * $columnas; $i++) {
+                for ($i = $contadorPosiciones + 1; $i <= $totalPosiciones; $i++) {
                     if (in_array((string)$i, $posicionesInhabilitadas)) {
                         echo "<div class='casillero disabled'>X</div>";
                     } else {
