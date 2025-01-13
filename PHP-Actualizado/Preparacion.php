@@ -126,10 +126,9 @@ $conn->close();
             color: green; /* Color verde para ítems verificados */
             font-weight: bold; /* Texto en negrita */
         }
-        .tachado {
-            color: red; /* Color rojo para ítems tachados */
-            text-decoration: line-through; /* Tachar el texto */
-            opacity: 0.7; /* Hacer el texto un poco transparente */
+        .no-verificado {
+            color: red; /* Color rojo para ítems no verificados */
+            font-weight: bold; /* Texto en negrita */
         }
     </style>
 </head>
@@ -156,10 +155,9 @@ $conn->close();
                         foreach ($articulos as $articulo) {
                             // Convertir el nombre del ítem a un ID válido
                             $idItem = str_replace(' ', '-', strtolower($articulo['nombre']));
-                            // Verificar si el ítem está verificado o tachado
-                            $claseVerificado = $articulo['datos_completos']['item_status'] == 1 ? 'verificado' : '';
-                            $claseTachado = $articulo['datos_completos']['item_status'] == 0 ? 'tachado' : '';
-                            echo "<div id='$idItem' class='articulo $claseVerificado $claseTachado'>{$articulo['nombre']}</div>";
+                            // Verificar si el ítem está verificado o no
+                            $claseVerificado = $articulo['datos_completos']['item_status'] == 1 ? 'verificado' : 'no-verificado';
+                            echo "<div id='$idItem' class='articulo $claseVerificado'>{$articulo['nombre']}</div>";
                         }
                         echo "</div>";
                     }
@@ -186,7 +184,7 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
-        // Refresh de la página cada 10 segundos (10000 ms)
+        // Refrescar la página cada 10 segundos (10000 ms)
         setTimeout(() => {
             window.location.reload();
         }, 10000);
