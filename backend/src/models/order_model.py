@@ -23,7 +23,7 @@ class Order:
         """
         self.items: list[Item] = items
         self.position: Position = None
-        self.order_id: str = order_id
+        self.order_id: int = order_id
 
     def is_empty(self) -> bool:
         """
