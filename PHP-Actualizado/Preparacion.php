@@ -29,7 +29,7 @@ if ($result->num_rows > 0) {
 }
 
 // Obtener los artículos por orden (id_order_assign) desde la tabla `order_wave` y `items`
-$sql = "SELECT items.*, order_wave.id_order_assign 
+$sql = "SELECT items.*, order_wave.id_order_assign, order_wave.item_status 
         FROM order_wave 
         JOIN items ON order_wave.id_item = items.id_item
         JOIN order_assign ON order_wave.id_order_assign = order_assign.id_order_assign
@@ -38,6 +38,7 @@ $sql = "SELECT items.*, order_wave.id_order_assign
 $result = $conn->query($sql);
 
 $articulosPorOrden = [];
+
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $id_order_assign = $row['id_order_assign'];
@@ -56,10 +57,6 @@ if ($result->num_rows > 0) {
 }
 
 $conn->close();
-
-// Simular arrays de ítems verificados (verde) y tachados (rojo)
-$itemsVerificados = ["renn", "actron"]; // Ejemplo de ítems verificados (verde)
-$itemsTachados = ["buscap"]; // Ejemplo de ítems tachados (rojo)
 ?>
 
 <!DOCTYPE html>
@@ -156,8 +153,8 @@ $itemsTachados = ["buscap"]; // Ejemplo de ítems tachados (rojo)
                             // Convertir el nombre del ítem a un ID válido
                             $idItem = str_replace(' ', '-', strtolower($articulo['nombre']));
                             // Verificar si el ítem está verificado o tachado
-                            $claseVerificado = in_array(strtolower($articulo['nombre']), $itemsVerificados) ? 'verificado' : '';
-                            $claseTachado = in_array(strtolower($articulo['nombre']), $itemsTachados) ? 'tachado' : '';
+                            $claseVerificado = $articulo['datos_completos']['item_status'] == 1 ? 'verificado' : '';
+                            $claseTachado = $articulo['datos_completos']['item_status'] == 0 ? 'tachado' : '';
                             echo "<div id='$idItem' class='articulo $claseVerificado $claseTachado'>{$articulo['nombre']}</div>";
                         }
                         echo "</div>";
@@ -185,7 +182,7 @@ $itemsTachados = ["buscap"]; // Ejemplo de ítems tachados (rojo)
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
-        // Refrescar la página cada 5 segundos (5000 ms)
+        // Refrescar la página cada 10 segundos (10000 ms)
         setTimeout(() => {
             window.location.reload();
         }, 10000);
