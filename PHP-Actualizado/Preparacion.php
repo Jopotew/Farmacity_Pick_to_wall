@@ -186,7 +186,7 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     <script>
-        // Refrescar la página cada 10 segundos (10000 ms)
+        // Refresh de la página cada 10 segundos (10000 ms)
         setTimeout(() => {
             window.location.reload();
         }, 10000);
