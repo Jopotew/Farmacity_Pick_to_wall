@@ -36,9 +36,9 @@ class WaveService:
         - Assigns orders to the available positions.
         """
         db_service = DatabaseService()
-        grid_config = db_service.getGrid()
+        grid_config = db_service.get_grid()
         positions = self.create_positions(grid_config)
-        self.sorted_orders = db_service.getOrders(positions[-1].position)
+        self.sorted_orders = db_service.get_orders(positions[-1].position)
 
         for position, order in zip(positions, self.sorted_orders):
             order.set_position(position)

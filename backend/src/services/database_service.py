@@ -54,7 +54,6 @@ class DatabaseService:
             GridConfig: An object representing the grid configuration.
         """
         query = "SELECT gridrow, gridcol FROM grid;"
-        print(query)
         self.cursor.execute(query)
         result = self.cursor.fetchall()
         return GridConfig.fromDict(result[0])
@@ -130,6 +129,9 @@ class DatabaseService:
             """
             self.cursor.execute(query_update_status, (status, order_assign_id))
             self.connection.commit()
+            
+            if status == 2:
+                self.clear_order_position(order_assign_id)
 
             if self.cursor.rowcount > 0:
                 print(f"El estado de la orden {order_assign_id} ha sido actualizado a {status}.")
@@ -198,8 +200,8 @@ class DatabaseService:
                 return False
 
             query_update_position = """
-            UPDATE order_position
-            SET position = %s
+            UPDATE order_wave
+            SET order_position = %s
             WHERE id_order_assign = %s;
             """
             self.cursor.execute(query_update_position, (position, order_assign_id))
@@ -214,4 +216,37 @@ class DatabaseService:
 
         except pymysql.MySQLError as e:
             print(f"Error al actualizar la posición de la orden: {e}")
+            return False
+            
+            
+            
+            
+    def clear_order_position(self, order_assign_id: int) -> bool:
+        """
+        Clears the position for the order with the given order_assign_id in the order_wave table.
+
+        Args:
+            order_assign_id (int): The ID of the assigned order whose position should be cleared.
+
+        Returns:
+            bool: True if the operation was successful, False otherwise.
+        """
+        try:
+            query_clear_position = """
+            UPDATE order_wave
+            SET order_position = NULL
+            WHERE id_order_assign = %s;
+            """
+            self.cursor.execute(query_clear_position, (order_assign_id,))
+            self.connection.commit()
+
+            if self.cursor.rowcount > 0:
+                print(f"La posición de la orden {order_assign_id} ha sido eliminada.")
+                return True
+            else:
+                print(f"No se encontró la orden {order_assign_id} o ya tiene la posición eliminada.")
+                return False
+
+        except pymysql.MySQLError as e:
+            print(f"Error al eliminar la posición de la orden {order_assign_id}: {e}")
             return False

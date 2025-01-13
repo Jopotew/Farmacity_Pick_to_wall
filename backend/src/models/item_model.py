@@ -16,8 +16,8 @@ class Item:
     item_name: str
     bar_code: str
     item_id : int
-
-    @staticmethod
+    
+    
     def fromDict(dic):
         """
         Creates an Item instance from a dictionary.
@@ -31,4 +31,4 @@ class Item:
         Returns:
             Item: An instance of the Item class initialized with the dictionary data.
         """
-        return Item(dic["farma_id"], dic["item_name"], dic["bar_code"], dic["item_id"])
+        return Item(dic["farma_id"], dic["item_name"], dic["bar_code"], dic["id_item"])
