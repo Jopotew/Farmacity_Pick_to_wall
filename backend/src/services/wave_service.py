@@ -25,6 +25,7 @@ class WaveService:
         """
         self.sorted_orders: list = []
         self.wave_completed: bool = False
+        self.item_positioned : list[Item] = []
 
     def configure(self):
         """
@@ -63,6 +64,10 @@ class WaveService:
                     positions.append(Position(row, col, position))
                 position += 1
         return positions
+        
+        
+    def get_sorted_orders(self):
+        return self.sorted_orders
 
     def search_item(self, item):
         """
@@ -75,6 +80,9 @@ class WaveService:
         rasp_controller = RaspiController()
         button_service = ButtonDataService()
         pos_order = self.search_position_of_order(item)
+        if pos_order is None: 
+            print("No item found")
+            return
         print("Item position:", pos_order)
         rasp_controller.turn_search_led(True, pos_order)
         button = button_service.define_button(pos_order)
@@ -92,6 +100,9 @@ class WaveService:
         Returns:
             Position: The position of the order containing the item.
         """
+        
+        if item_A is None:
+            return None
         for order in self.sorted_orders:
             for item_B in order.items:
                 if item_B.item_name == item_A.item_name:
@@ -197,9 +208,13 @@ class WaveService:
                 if item in order.items:
                     order.remove_items(item)
                     print(
-                        f"Removed item '{item.item_name}' from order at position {pos_order}."
+                        f"Alocated Item  '{item.item_name}' from order at position {pos_order}."
                     )
-                self.order_complete(order, pos_order)
+                    self.item_positioned.append(item)
+                    if order.is_empty():
+                        self.order_complete(order, pos_order)
+
+                
         else:
             print("No valid item provided for removal. Orders remain unchanged.")
 
@@ -216,22 +231,30 @@ class WaveService:
             pos_order (Position): The position of the order containing the item.
 
         """
-        if order.is_empty():
-            rasp_controller = RaspiController()
-            rasp_controller.turn_completion_led(True, pos_order)
-            db_service = DatabaseService()
-            db_service.change_order_status(order.order_id, 2)
+        
+        rasp_controller = RaspiController()
+        rasp_controller.turn_completion_led(True, pos_order)
+        db_service = DatabaseService()
+        db_service.change_order_status(order.order_id, 2)
+        
+        
+    def get_postioned_items(self):
+        return self.item_positioned
+        
 
     def print_orders(self):
         """
         Prints the current state of the orders.
         """
-        if not self.sorted_orders:
+        
+        orders = self.sorted_orders
+        
+        if not orders:
             print("No orders available.")
             return
 
         print("Current orders:")
-        for order in self.sorted_orders:
+        for order in orders:
             print(f"Position {order.position}:")
             for item in order.items:
                 print(f"    {item.item_name}")

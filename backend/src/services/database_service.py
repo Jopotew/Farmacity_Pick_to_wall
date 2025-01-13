@@ -49,15 +49,16 @@ class DatabaseService:
         """
         self.cursor = None
         self.connection = None
+        
         try:
 
             self.connection = pymysql.connect(
-                host=keys.host,  # Dirección del servidor
-                user=keys.user,  # Usuario
-                password=keys.password,  # Contraseña
-                database=keys.database,  # Nombre de la base de datos
+                host="localhost",  # Dirección del servidor
+                user="root",  # Usuario
+                password="Farmacity2024",  # Contraseña
+                database="trabajofarmacity",  # Nombre de la base de datos
                 cursorclass=pymysql.cursors.DictCursor,
-                port=keys.port,
+                port=3306,
             )
 
             self.cursor = self.connection.cursor()
@@ -81,6 +82,7 @@ class DatabaseService:
             GridConfig: An object representing the grid configuration.
         """
         consulta = "SELECT gridrow, gridcol FROM grid;"
+        print(consulta)
         self.cursor.execute(consulta)
         resultado = self.cursor.fetchall()
         return GridConfig.fromDict(resultado[0])

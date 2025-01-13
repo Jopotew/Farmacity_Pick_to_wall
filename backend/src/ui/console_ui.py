@@ -3,11 +3,12 @@ class Console:
         print("\nChoose search method:")
         print("1. Ingreso Manual")
         print("2. Utilizar lector")
+        print("3. Salir")
 
         try:
             while True:
                 choice = int(input("Enter your choice: "))
-                if 1 <= choice <= 2:
+                if 1 <= choice <= 3:
                     return choice
                 else:
                     print("Invalid choice, please select a number between 1 and 6.")

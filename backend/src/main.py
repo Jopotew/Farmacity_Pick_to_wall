@@ -40,7 +40,7 @@ def main():
             if option == 1:
                 while True:
                     if wave_service.check_wave_completion():
-                        break
+                        return False
                     option = menu_ui.menu()
                     if option == 1:
                         menu_controller.search_name()
@@ -55,13 +55,16 @@ def main():
                         menu_controller.print_orders()
 
                     elif option == 5:  # exit
-                        break
+                        return False
 
             if option == 2:
                 while True:
                     if wave_service.check_wave_completion():
-                        break
+                        return False
                     menu_controller.search_barcode()
+                    
+            if option == 3:
+                return False
 
     finally:
         raspi_controller = RaspiController()
